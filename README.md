@@ -7,6 +7,7 @@ Conway's Game of Life as a [Tiny Tapeout](https://tinytapeout.com) chip, plus a 
 - **Research (中文)**: [docs/research.md](docs/research.md) — how the infinite zoom works, Turing completeness, and whether it can be taped out.
 - **RTL**: [src/tt_um_life.v](src/tt_um_life.v) — N×N torus, every cell updated in parallel during vblank, 640×480 VGA on the TinyVGA PMOD pinout.
 - **Tiny Tapeout metadata (draft)**: [info.yaml](info.yaml)
+- **tapeout.net (NAND + LATCH) estimate**: [tapeout_net/](tapeout_net/README.md) — ~55 NAND + 1 LATCH per cell
 
 ## Pins
 
