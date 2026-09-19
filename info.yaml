@@ -1,0 +1,44 @@
+# Tiny Tapeout project info (draft). Tile size is an estimate from Yosys + sky130_fd_sc_hd:
+#   N=8  -> ~16.2k um^2 std-cell area -> 1x2 tiles
+#   N=16 -> ~55.1k um^2 std-cell area -> 3x2 tiles (confirm with the TT GDS action)
+project:
+  title:        "Life on a Torus (VGA)"
+  author:       ""
+  discord:      ""
+  description:  "Conway's Game of Life on an N x N wraparound grid, shown on the TinyVGA PMOD"
+  language:     "Verilog"
+  clock_hz:     25175000
+  tiles:        "3x2"
+  top_module:   "tt_um_life"
+  source_files:
+    - "tt_um_life.v"
+
+pinout:
+  ui[0]: "run"
+  ui[1]: "step"
+  ui[2]: "load preset"
+  ui[3]: "preset[0]"
+  ui[4]: "preset[1]"
+  ui[5]: "speed[0]"
+  ui[6]: "speed[1]"
+  ui[7]: "speed[2]"
+
+  uo[0]: "R1"
+  uo[1]: "G1"
+  uo[2]: "B1"
+  uo[3]: "VSync"
+  uo[4]: "R0"
+  uo[5]: "G0"
+  uo[6]: "B0"
+  uo[7]: "HSync"
+
+  uio[0]: "gen[0]"
+  uio[1]: "gen[1]"
+  uio[2]: "gen[2]"
+  uio[3]: "gen[3]"
+  uio[4]: "gen[4]"
+  uio[5]: "gen[5]"
+  uio[6]: "gen[6]"
+  uio[7]: "gen[7]"
+
+yaml_version: 6

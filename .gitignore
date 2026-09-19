@@ -1,0 +1,4 @@
+sim/
+synth/*.lib
+synth/*.log
+*.vvp
