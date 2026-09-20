@@ -43,7 +43,9 @@
 
 `scan_info.mjs` 扫了全部 931 个项目共 **27,671 个电路**（累计 967 万门）。`classify.mjs` 把其中的小型组合电路下载下来，在本地跑真值表，和参考函数逐一比对，识别出它们到底算什么。
 
-结果见 [scan/data/classified.json](scan/data/classified.json)，各功能的**最小已知实现**：
+识别范围有限制：只覆盖**无状态、输入不超过 12 位、且形状匹配参考函数表**的电路，并且**跳过了所有含 REF 的电路**（11,652 个候选里识别出 10,842 个）。所以下表是"已识别范围内的最小实现"，不是全网最优；"链上没有 Life 规则电路"这句话同样只在这个范围内成立。
+
+结果见 [scan/data/classified.json](scan/data/classified.json)：
 
 | 功能 | 最小门数 | 项目 / 电路号 |
 |---|---|---|
@@ -94,17 +96,17 @@
 
 三种做法在 8×8 上的对比：
 
-| 做法 | 流片消耗的晶体管 | 每拍门数 | 单拍 gas（3000/门 + 50k） |
+| 做法 | 流片消耗的晶体管 | 每拍门数 | 单拍 gas（实测外推） |
 |---|---|---|---|
-| Yosys 平铺，不用 REF | 3,579 | 3,515 | 1,055 万 |
-| 方案 A：自制规则 56 门 + REF | **120**（64 LATCH + 56 NAND） | 3,648 | 1,099 万 ✅ |
-| 方案 B：复用 #3151 + 12 门 | **76**（64 LATCH + 12 NAND） | 4,352 | 1,311 万 ❌ 超限 |
+| Yosys 平铺，不用 REF | 3,579 | 3,515 | ~905 万 |
+| 方案 A：自制规则 56 门 + REF | **120**（64 LATCH + 56 NAND） | 3,648 | ~940 万 |
+| 方案 B：复用 #3151 + 12 门 | **76**（64 LATCH + 12 NAND） | 4,352 | ~1,115 万 |
 
-协议的 `maxRunGas()` 是 **12,000,000**，`runGasFor(gates, 1)` = 3000×门数 + 50000（实测自链上）。所以：
+gas 数字的来源（[scan/gas_probe.mjs](scan/gas_probe.mjs)，`eth_estimateGas`，只读）：
 
-- **8×8 用方案 A**，1,099 万 gas，卡在上限内；
-- 方案 B 更省 token，但 8×8 超 gas 上限，适合 7×7 及以下（7×7 = 3,332 门，1,005 万 gas，可行）；
-- 16×16 两种方案都远超上限，链上跑不动，只能用 `step()` 这种免费的只读调用在链下跑。
+- 对已上链的三个不同大小的电路实测 `eval()`：65 门 → 201,058 gas；1,204 门 → 2,960,378；2,584 门 → 6,419,057。拟合出 **约 2,468 gas/门 + 4 万**，上表按此外推。
+- 协议自己的预算公式是 `runGasFor(gates, 1) = 3000×门数 + 50000`，`maxRunGas()` = 12,000,000。但这两个是**挖矿合约**（0x7E2E…7b46）上的参数，我没能证明普通的 `beat()` 也受它约束 —— 该合约是代理，`beat`/`evaluate` 直接调用都 revert（大概需要先注册）。所以 **"8×8 会不会超协议上限"这个问题目前无法定论**，方案选择只能按实测 gas 和 BSC 的区块 gas 上限（约 1.4 亿）来判断，两个方案都在区块上限内。
+- 只读调用能跑多大：6,020 门的电路 `eth_estimateGas` 正常（1,428 万），9,632 门时 estimateGas 失败但 `eth_call` 仍返回结果，30,736 门两者都失败。**16×16（14,592 门）用只读 `step()` 大概率可以跑，上链 `beat` 则未知。**
 
 验证：滑翔机在 4×4 / 8×8 / 16×16 上分别跑 4N 拍，每一拍都和参考模型逐位一致。本地模拟器与链上 `eval()` 对拍过两次：Standard Cell Library #1（65 门，6/6 一致），以及 Blonskr_No1 #30（1,204 门、**含 REF**，8/8 一致）—— 后者确认了 REF 的语义，整个网格方案都建立在它上面。
 
@@ -113,7 +115,8 @@ cd scan
 node build_life.mjs                    # 方案 A：构建 + 验证，输出网表
 node build_life_ref.mjs                # 方案 B：复用链上 popcount8
 node find_refs.mjs                     # 找链上在用 REF 的电路
-node demo.mjs 8 24                     # 在终端里看滑翔机跑
+node demo.mjs 8 24                     # 在终端里看滑翔机跑（N 不限于 2 的幂，7 也可以）
+node gas_probe.mjs                     # 实测链上 eval 的 gas
 node verify_chain.mjs 0xFAc299310ca53DB70De49F5e11D3B14A41B1Ef75 1 6   # 模拟器对拍链上 eval
 node scan_info.mjs && node classify.mjs   # 重跑普查（约 1 小时，受公共 RPC 限流）
 ```
@@ -136,5 +139,6 @@ node scan_info.mjs && node classify.mjs   # 重跑普查（约 1 小时，受公
 ## 4. 没做 / 待确认
 
 - 没有连钱包、没有发交易。真要上链，需要你自己 mint token 并调用 `tapeout(netlist, nIn, nOut)`。
-- gas 数字来自链上的 `runGasFor` / `maxRunGas`（挖矿合约 0x7E2E…7b46），是协议自己的预算公式；实际 `beat` 交易的 gas 没有实测（需要先流片）。
+- `beat()` 的真实 gas 和它是否受 `maxRunGas` 约束，没能确认（合约是代理，直接调用 revert）。上表的 gas 是用 `eval()` 实测外推的。
+- 网格电路本身没有流片，所以没有真实的链上 `step()` 结果可对拍；本地模拟器的正确性是通过已上链的电路（含 REF 的那个）间接验证的。
 - 协议还有一套"挖矿"机制（`getMiner`/`registerCounterexample`/`passesQuality`），看起来是给标准函数的最小电路发奖励，没有深入。
