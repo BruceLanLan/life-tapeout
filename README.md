@@ -1,6 +1,6 @@
 # life-tapeout
 
-**English** · [中文](README.zh.md) · [Showcase](docs/index.html) · [Playground](tapeout_net/nand-life-bench.html)
+**English** · [中文](README.zh.md) · Showcase: [source](docs/index.html) / [live](https://claude.ai/artifact/3TVHPVTmZtXJyUWcrEGKW8) · Playground: [source](tapeout_net/nand-life-bench.html) / [live](https://claude.ai/artifact/Xcxn2nzNdhSzzX4dGwLQB9)
 
 Conway's Game of Life, taken apart and rebuilt for two very different kinds of "tapeout":
 

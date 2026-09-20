@@ -1,6 +1,6 @@
 # life-tapeout
 
-[English](README.md) · **中文** · [展示页](docs/index.html) · [Playground](tapeout_net/nand-life-bench.html)
+[English](README.md) · **中文** · 展示页：[源码](docs/index.html) / [在线](https://claude.ai/artifact/3TVHPVTmZtXJyUWcrEGKW8) · Playground：[源码](tapeout_net/nand-life-bench.html) / [在线](https://claude.ai/artifact/Xcxn2nzNdhSzzX4dGwLQB9)
 
 把 Conway 的生命游戏拆开，在两种完全不同的"流片"上重新搭起来：
 
