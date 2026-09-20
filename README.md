@@ -1,15 +1,18 @@
 # life-tapeout
 
-Conway's Game of Life as a [Tiny Tapeout](https://tinytapeout.com) chip, plus a reverse-engineering study of oimo's [Life Universe](https://oimo.io/works/life).
+Conway's Game of Life on two kinds of "tapeout", plus a reverse-engineering study of oimo's [Life Universe](https://oimo.io/works/life):
+
+1. **[tapeout.net](https://tapeout.net)** — the on-chain NAND/LATCH circuit protocol. Protocol reverse-engineered, all 27,671 existing circuits surveyed and functionally classified, and a Life design that burns 120 transistors for an 8×8 board (naive: 3,579). See **[tapeout_net/](tapeout_net/README.md)**.
+2. **[Tiny Tapeout](https://tinytapeout.com)** — real silicon (sky130). Verilog Life engine with VGA output, simulated and synthesized.
 
 ![VGA output captured from RTL simulation](docs/life_vga.gif)
 
-- **Research (中文)**: [docs/research.md](docs/research.md) — how the infinite zoom works, Turing completeness, and whether it can be taped out.
-- **RTL**: [src/tt_um_life.v](src/tt_um_life.v) — N×N torus, every cell updated in parallel during vblank, 640×480 VGA on the TinyVGA PMOD pinout.
+- **tapeout.net (中文)**: [tapeout_net/README.md](tapeout_net/README.md) — netlist format, circuit census, and the Life design with verification
+- **Research (中文)**: [docs/research.md](docs/research.md) — how the infinite zoom works, Turing completeness, and whether it can be taped out
+- **RTL**: [src/tt_um_life.v](src/tt_um_life.v) — N×N torus, every cell updated in parallel during vblank, 640×480 VGA on the TinyVGA PMOD pinout
 - **Tiny Tapeout metadata (draft)**: [info.yaml](info.yaml)
-- **tapeout.net (NAND + LATCH) estimate**: [tapeout_net/](tapeout_net/README.md) — ~55 NAND + 1 LATCH per cell
 
-## Pins
+## Tiny Tapeout pins
 
 | Pin | Function |
 |---|---|
@@ -23,7 +26,7 @@ Conway's Game of Life as a [Tiny Tapeout](https://tinytapeout.com) chip, plus a 
 
 Clock: 25.175 MHz (25 MHz works on most monitors).
 
-## Simulate
+## Simulate the Verilog
 
 Needs `iverilog`, Python 3 with numpy, and `ffmpeg`. The testbench acts like a monitor: it locks onto hsync/vsync, captures frames, and dumps the grid every generation for a golden-model check.
 
