@@ -9,8 +9,10 @@ import { Builder, buildGrid } from "./build_life.mjs";
 // smallest popcount8 found on chain: 55 NAND (see data/classified.json)
 export const POPCOUNT8 = { cpu: "0xb1024b89886B9a34Aa4ff5F31C411D708b20a14C", id: 3151 };
 
-const netlists = JSON.parse(fs.readFileSync("data/netlists.json"));
-const popBytes = Buffer.from(netlists[`${POPCOUNT8.cpu}:${POPCOUNT8.id}`], "hex");
+// the scan cache if it exists, otherwise the copy committed to the repo
+const popBytes = fs.existsSync("data/netlists.json")
+  ? Buffer.from(JSON.parse(fs.readFileSync("data/netlists.json"))[`${POPCOUNT8.cpu}:${POPCOUNT8.id}`], "hex")
+  : Buffer.from(fs.readFileSync("data/popcount8_3151.hex", "utf8").trim().slice(2), "hex");
 const popC = compile(popBytes, 8, 4, () => { throw new Error("nested ref"); });
 
 // which output bit is the LSB? (probe with a single 1)
