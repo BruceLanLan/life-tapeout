@@ -5,3 +5,4 @@ synth/*.log
 tapeout_net/scan/data/netlists.json
 tapeout_net/scan/data/*.log
 tapeout_net/scan/node_modules/
+tapeout_net/scan/data/*.json

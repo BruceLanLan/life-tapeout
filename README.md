@@ -18,7 +18,7 @@ Nothing in this repository has been sent on-chain. Every on-chain interaction is
 ## Highlights
 
 - **Netlist format decoded and cross-checked.** A decoder, encoder and simulator for tapeout.net's binary netlist (`NAND` / `LATCH` / `REF`), validated against the contract's own `eval()` on deployed circuits, including one that uses `REF`.
-- **Census of everything on chain.** Every circuit of every project fetched, and the small combinational ones run through truth tables against a library of 39 reference functions. The smallest known implementations of adders, multipliers, decoders, comparators and popcounts are tabulated — and only 4 of 13,401 candidates use `REF` at all.
+- **Census of everything on chain.** Every circuit of every project fetched (the raw data is not committed — `npm run census` regenerates it), and the small combinational ones run through truth tables against a library of 39 reference functions. The smallest known implementations of adders, multipliers, decoders, comparators and popcounts are tabulated — and only 4 of 13,401 candidates use `REF` at all.
 - **A 56-NAND Life rule, verified exhaustively**, beating Yosys+ABC's 63. A second variant reuses an existing on-chain 55-NAND popcount and needs only 12 NANDs of its own.
 - **A board with zero top-level gates.** N² LATCHes hold the state; each cell is one `REF` to the rule. Why the LATCHes cannot be factored out is argued in the docs.
 - **Ready-to-send calldata**, dry-run against the chain: the simulated `tapeout()` call reverts exactly at the token burn (`ERC1155InsufficientBalance`), proving the encoding reaches the right function.
@@ -32,6 +32,7 @@ tapeout_net/            tapeout.net track
   README.md / README.en.md   the full write-up (中文 / English)
   scan/                 scripts: netlist codec + simulator, census, Life builders, calldata, BLIF export
   scan/out/             generated netlists (.hex), BLIF files, calldata.json
+  scan/data/            census cache (git-ignored; only the reused popcount8 netlist is committed)
   life_core.v           no-REF baseline for the Yosys NAND count
 src/                    Tiny Tapeout Verilog (tt_um_brucelanlan_life)
 test/                   Icarus testbench + golden-model check / GIF renderer

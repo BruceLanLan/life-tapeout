@@ -49,7 +49,7 @@ The second pass ([scan/classify2.mjs](scan/classify2.mjs)) resolves circuits tha
 
 An unexpected finding: **only 4 of the 13,401 candidates actually use REF.** Cross-circuit reuse — the mechanism that makes token savings possible — is almost unused on chain.
 
-Results in [scan/data/classified.json](scan/data/classified.json):
+The raw census data is not committed (`npm run census` regenerates it in about an hour). Summary of what was identified:
 
 | Function | Smallest gate count | Project / circuit id |
 |---|---|---|

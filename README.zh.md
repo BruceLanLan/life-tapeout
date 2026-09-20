@@ -18,7 +18,7 @@
 ## 亮点
 
 - **网表格式逆向并对拍。** tapeout.net 二进制网表（`NAND` / `LATCH` / `REF`）的解码器、编码器和模拟器，用链上已部署电路的 `eval()` 验证过，包括一个用了 `REF` 的电路。
-- **全链普查。** 每个项目的每个电路都拉下来，小型组合电路跑真值表，和 39 个参考函数比对。加法器、乘法器、译码器、比较器、popcount 的最小已知实现都列成了表 —— 13,401 个候选里只有 4 个真的用了 `REF`。
+- **全链普查。** 每个项目的每个电路都拉下来（原始数据不入库，`npm run census` 可重新生成），小型组合电路跑真值表，和 39 个参考函数比对。加法器、乘法器、译码器、比较器、popcount 的最小已知实现都列成了表 —— 13,401 个候选里只有 4 个真的用了 `REF`。
 - **56 门的 Life 规则电路，穷举验证**，比 Yosys+ABC 的 63 门更省。另一个变体复用链上现成的 55 门 popcount，自己只需要 12 个 NAND。
 - **顶层零门的棋盘。** N² 个 LATCH 存状态，每个细胞是一个指向规则电路的 `REF`。为什么这些 LATCH 省不掉，文档里有论证。
 - **可直接发送的 calldata**，对链空跑验证过：模拟的 `tapeout()` 调用恰好 revert 在销毁 token 那一步（`ERC1155InsufficientBalance`），说明编码确实到达了正确的函数。
@@ -32,6 +32,7 @@ tapeout_net/            tapeout.net 方向
   README.md / README.en.md   完整报告（中文 / English）
   scan/                 脚本：网表编解码 + 模拟器、普查、Life 构建、calldata、BLIF 导出
   scan/out/             生成的网表（.hex）、BLIF、calldata.json
+  scan/data/            普查缓存（已忽略；只提交了复用的 popcount8 网表）
   life_core.v           不用 REF 的基线，用于 Yosys 数 NAND
 src/                    Tiny Tapeout Verilog（tt_um_brucelanlan_life）
 test/                   Icarus 测试平台 + 金模型比对 / GIF 渲染
