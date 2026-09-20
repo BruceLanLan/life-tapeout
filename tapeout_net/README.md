@@ -43,24 +43,30 @@
 
 `scan_info.mjs` 扫了全部 931 个项目共 **27,671 个电路**（累计 967 万门）。`classify.mjs` 把其中的小型组合电路下载下来，在本地跑真值表，和参考函数逐一比对，识别出它们到底算什么。
 
-识别范围有限制：只覆盖**无状态、输入不超过 12 位、且形状匹配参考函数表**的电路，并且**跳过了所有含 REF 的电路**（11,652 个候选里识别出 10,842 个）。所以下表是"已识别范围内的最小实现"，不是全网最优；"链上没有 Life 规则电路"这句话同样只在这个范围内成立。
+第二轮（[scan/classify2.mjs](scan/classify2.mjs)）把含 REF 的电路也递归解析进来，参考函数库扩到 39 个：**13,401 个候选里识别出 12,015 个**。仍有限制：只覆盖无状态、输入不超过 14 位、形状匹配参考函数表的电路。所以下表是"已识别范围内的最小实现"，不是全网最优；"链上没有 Life 规则电路"这句话同样只在这个范围内成立。
+
+一个意外发现：13,401 个候选里**只有 4 个真的用了 REF**。跨电路复用这个机制链上几乎没人在用，而它恰恰是省 token 的关键。
 
 结果见 [scan/data/classified.json](scan/data/classified.json)：
 
 | 功能 | 最小门数 | 项目 / 电路号 |
 |---|---|---|
-| NAND | 1 | Genesis CPU #4255 |
-| AND | 2 | Blonskr_No1 #47 |
-| OR | 3 | Blonskr_No1 #48 |
-| NOR | 4 | Blonskr_No1 #49 |
-| XOR | 4 | Blonskr_No1 #50 |
-| MUX2 | 4 | Genesis CPU #4263 |
-| XNOR | 5 | Genesis CPU #4259 |
-| 半加器 | 5 | Genesis CPU #4265 |
+| NAND / AND / OR | 1 / 2 / 3 | Genesis #4255、Blonskr_No1 #47 #48 |
+| NOR / XOR / MUX2 | 4 | Blonskr_No1 #49 #50、Genesis #4263 |
+| XNOR / 半加器 | 5 | Genesis #4259 #4265 |
+| 三输入多数表决 | 6 | Genesis #4262 |
 | 全加器 | 9 | Blonskr_No1 #145 |
-| 4+4 位加法 | 32 | TapeOut #2118 |
-| 4+4+cin 位加法 | 36 | Genesis CPU #4269 |
-| 8 位 popcount | **55** | **TapeOut #3151** |
+| 2-4 译码器 / MUX4 | 10 / 11 | Genesis #4267、TapeOut #1060 |
+| 2×2 乘法 / 4 位加一 | 15 / 16 | Blonskr_No1 #533、TapeOut #924 |
+| 4 位大于比较 / 4 位 popcount | 18 / 21 | Blonskr_No1 #1112、TapeOut #1799 |
+| 4 位移位（左/右） | 23 | Blonskr_No1 #1146 #1153 |
+| 3-8 译码器 / 4 位相等 | 25 / 26 | Blonskr_No1 #607 #152 |
+| 8 位奇偶校验 | 28 | Genesis #4264 |
+| 4+4 位加法（含进位） | 32 | TapeOut #2118 |
+| 8 位加一 / 3×3 乘法 | 36 / 45 | TapeOut #925、Blonskr_No1 #2469 |
+| 6+6 位加法 | 50 | Blonskr_No1 #1881 |
+| **8 位 popcount** | **55** | **TapeOut #3151** |
+| 4×4 乘法 | 114 | TapeOut #8709 |
 
 其中 **TapeOut #3151 的 55 门 8 位 popcount 直接可用**：Life 每个细胞要做的第一件事就是数 8 个邻居。因为 REF 引用不花 token，把它当子模块之后，我们自己只需要再补 12 个 NAND 做判定（见下）。
 
