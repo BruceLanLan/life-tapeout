@@ -37,7 +37,7 @@ iverilog -g2012 -o sim/tb.vvp test/tb.v src/tt_um_brucelanlan_life.v
 cd sim && vvp -n tb.vvp && python3 ../test/check_and_render.py 16
 ```
 
-The full run takes ~18 minutes in Icarus. Add `+short` to `vvp` for a quick run, or build with `-Ptb.N=8 -Ptb.CSH=5` and pass `8` to the Python script for an 8×8 grid.
+The full run takes ~22 minutes in Icarus (288 frames, golden check 266 transitions, 0 mismatches). Add `+short` to `vvp` for a quick run, or build with `-Ptb.N=8 -Ptb.CSH=5` and pass `8` to the Python script for an 8×8 grid.
 
 ## Synthesize (area estimate)
 
