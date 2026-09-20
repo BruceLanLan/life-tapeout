@@ -1,0 +1,45 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  netlist:
+    name: tapeout.net netlists (exhaustive rule check, glider on the grid)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm test
+        working-directory: tapeout_net/scan
+
+  verilog:
+    name: Tiny Tapeout RTL (8x8 short sim + golden check + sky130 synth)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: sudo apt-get update && sudo apt-get install -y iverilog yosys python3-numpy
+      - name: simulate
+        run: |
+          mkdir -p sim
+          iverilog -g2012 -Ptb.N=8 -Ptb.CSH=5 -o sim/tb.vvp test/tb.v src/tt_um_brucelanlan_life.v
+          cd sim && vvp -n tb.vvp +short | tee run.log
+          grep -q "errors=0" run.log
+      - name: golden check
+        run: |
+          python3 - <<'EOF'
+          import importlib.util, sys
+          spec = importlib.util.spec_from_file_location("c", "test/check_and_render.py")
+          m = importlib.util.module_from_spec(spec); sys.argv = ["x", "8"]; spec.loader.exec_module(m)
+          m.SIM = "sim"
+          sys.exit(0 if m.check() else 1)
+          EOF
+      - name: synthesize
+        run: |
+          ./synth/fetch_lib.sh
+          yosys -q -l synth/ci.log -s synth/synth_8.ys
+          grep -E "^ +[0-9]+ [0-9.E+]+ cells" synth/ci.log | tail -1

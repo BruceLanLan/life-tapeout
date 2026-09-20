@@ -1,5 +1,7 @@
 # Life on tapeout.net
 
+[English](README.en.md) · **中文**
+
 [tapeout.net](https://tapeout.net)（TapeOut Protocol，BSC 链上）把电路做成 NFT：画布上只有 5 种原语 —— 输入引脚、输出引脚、常量 0/1、**NAND**、**LATCH**（1 位状态，每拍更新）。每个 NAND/LATCH 消耗一个"晶体管" token，"流片"时 token 被销毁、铸出电路 NFT。
 
 本目录是对这个协议的逆向记录，以及在它上面实现 Conway's Game of Life 的完整设计。**全部为只读分析：没有连接钱包，没有发送任何交易，没有花费任何资金。**
