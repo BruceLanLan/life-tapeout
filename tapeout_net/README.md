@@ -58,15 +58,15 @@
 | 全加器 | 9 | Blonskr_No1 #145 |
 | 4+4 位加法 | 32 | TapeOut #2118 |
 | 4+4+cin 位加法 | 36 | Genesis CPU #4269 |
-| 8 位 popcount | 58 | Blonskr_No1 #2194 |
+| 8 位 popcount | **55** | **TapeOut #3151** |
 
-对 Life 有用的是全加器（9 门，和手工最优一致）和 8 位 popcount。但现成的 popcount 是 58 门，比我们整条规则（56 门）还贵 —— **直接手工做规则电路更划算**，因为 Life 只需要判断"邻居数是否为 2 或 3"，不需要完整的计数结果。
+其中 **TapeOut #3151 的 55 门 8 位 popcount 直接可用**：Life 每个细胞要做的第一件事就是数 8 个邻居。因为 REF 引用不花 token，把它当子模块之后，我们自己只需要再补 12 个 NAND 做判定（见下）。
 
-链上没有找到现成的 Life 规则电路。
+链上没有找到现成的 Life 规则电路，所以这部分得自己做。
 
 ## 3. 我们的设计
 
-### 规则电路：56 个 NAND
+### 方案 A：自制规则电路，56 个 NAND
 
 [scan/build_life.mjs](scan/build_life.mjs) `buildRule()`，10 输入（8 邻居 + 自身 + seed）→ 1 输出：
 
@@ -75,6 +75,12 @@
 - `seed` 输入直接 OR 进结果，用来注入初始图案，只花 2 门（复用了取反后的中间信号）。
 
 **1024 种输入穷举验证通过。** 作为对比，Yosys + ABC 综合同样的功能是 63 门。
+
+### 方案 B：复用链上的 popcount8，自己只花 12 个 NAND
+
+[scan/build_life_ref.mjs](scan/build_life_ref.mjs)：REF 引用 TapeOut #3151（55 门 popcount8），拿到 4 位邻居计数后，用 12 个 NAND 完成 `!(b3|b2) & b1 & (b0|self)` 判定和 seed 注入。同样 1024 种输入穷举验证通过。
+
+代价是每拍的门数从 57/细胞涨到 68/细胞（popcount 给出完整计数，比 Life 需要的多）。**token 更省，gas 更贵。**
 
 ### 网格电路：顶层 0 个 NAND
 
@@ -86,19 +92,33 @@
 | 8×8 | 0 NAND + 64 LATCH | 3,648 | 4,160 B |
 | 16×16 | 0 NAND + 256 LATCH | 14,592 | 16,640 B |
 
-加上规则电路本身一次性的 56 个 NAND：**8×8 的 Life 总共只要 120 个晶体管**。对比不用 REF 的平铺写法（Yosys 综合，见下）是 3,579 个 —— **省 30 倍**。
+三种做法在 8×8 上的对比：
 
-验证：滑翔机在 4×4 / 8×8 / 16×16 上分别跑 4N 拍，每一拍都和 numpy 风格的参考模型逐位一致。本地模拟器本身也和链上的 `eval()` 对拍过（Standard Cell Library #1，6/6 一致）。
+| 做法 | 流片消耗的晶体管 | 每拍门数 | 单拍 gas（3000/门 + 50k） |
+|---|---|---|---|
+| Yosys 平铺，不用 REF | 3,579 | 3,515 | 1,055 万 |
+| 方案 A：自制规则 56 门 + REF | **120**（64 LATCH + 56 NAND） | 3,648 | 1,099 万 ✅ |
+| 方案 B：复用 #3151 + 12 门 | **76**（64 LATCH + 12 NAND） | 4,352 | 1,311 万 ❌ 超限 |
+
+协议的 `maxRunGas()` 是 **12,000,000**，`runGasFor(gates, 1)` = 3000×门数 + 50000（实测自链上）。所以：
+
+- **8×8 用方案 A**，1,099 万 gas，卡在上限内；
+- 方案 B 更省 token，但 8×8 超 gas 上限，适合 7×7 及以下（7×7 = 3,332 门，1,005 万 gas，可行）；
+- 16×16 两种方案都远超上限，链上跑不动，只能用 `step()` 这种免费的只读调用在链下跑。
+
+验证：滑翔机在 4×4 / 8×8 / 16×16 上分别跑 4N 拍，每一拍都和参考模型逐位一致。本地模拟器与链上 `eval()` 对拍过两次：Standard Cell Library #1（65 门，6/6 一致），以及 Blonskr_No1 #30（1,204 门、**含 REF**，8/8 一致）—— 后者确认了 REF 的语义，整个网格方案都建立在它上面。
 
 ```sh
 cd scan
-node build_life.mjs                    # 构建 + 验证，输出网表
+node build_life.mjs                    # 方案 A：构建 + 验证，输出网表
+node build_life_ref.mjs                # 方案 B：复用链上 popcount8
+node find_refs.mjs                     # 找链上在用 REF 的电路
 node demo.mjs 8 24                     # 在终端里看滑翔机跑
 node verify_chain.mjs 0xFAc299310ca53DB70De49F5e11D3B14A41B1Ef75 1 6   # 模拟器对拍链上 eval
 node scan_info.mjs && node classify.mjs   # 重跑普查（约 1 小时，受公共 RPC 限流）
 ```
 
-### 对照：不用 REF 的平铺写法
+### 对照：不用 REF 的平铺写法（Yosys）
 
 [life_core.v](life_core.v) 用 Yosys 综合成纯 NAND，每个细胞约 55 个 NAND + 1 个 LATCH：
 
@@ -116,5 +136,5 @@ node scan_info.mjs && node classify.mjs   # 重跑普查（约 1 小时，受公
 ## 4. 没做 / 待确认
 
 - 没有连钱包、没有发交易。真要上链，需要你自己 mint token 并调用 `tapeout(netlist, nIn, nOut)`。
-- 每拍 `beat` 的 gas 成本没有实测（合约里有 `runGasFor(gateCount, cycles)` 和 `maxRunGas` 限制，8×8 是 3,648 门，需要先确认没有超上限）。
+- gas 数字来自链上的 `runGasFor` / `maxRunGas`（挖矿合约 0x7E2E…7b46），是协议自己的预算公式；实际 `beat` 交易的 gas 没有实测（需要先流片）。
 - 协议还有一套"挖矿"机制（`getMiner`/`registerCounterexample`/`passesQuality`），看起来是给标准函数的最小电路发奖励，没有深入。
