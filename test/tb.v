@@ -13,7 +13,7 @@ module tb;
   reg  [7:0] ui_in = 8'b000_00_001;  // run, speed 0
   wire [7:0] uo_out, uio_out, uio_oe;
 
-  tt_um_life #(.N(N), .CSH(CSH)) dut (
+  tt_um_brucelanlan_life #(.N(N), .CSH(CSH)) dut (
       .ui_in(ui_in), .uo_out(uo_out), .uio_in(8'h00), .uio_out(uio_out),
       .uio_oe(uio_oe), .ena(1'b1), .clk(clk), .rst_n(rst_n));
 

@@ -1,5 +1,5 @@
 /*
- * tt_um_life — Conway's Game of Life on an N x N torus, VGA 640x480 output.
+ * tt_um_brucelanlan_life — Conway's Game of Life on an N x N torus, VGA 640x480 output.
  * Tiny Tapeout pinout.
  *
  *   ui_in[0]   run        1 = advance generations automatically
@@ -16,7 +16,7 @@
  */
 `default_nettype none
 
-module tt_um_life #(
+module tt_um_brucelanlan_life #(
     parameter N   = 16,  // grid is N x N (power of two, >= 8), wraps around (torus)
     parameter CSH = 4    // each cell is 2^CSH pixels wide on screen
 ) (

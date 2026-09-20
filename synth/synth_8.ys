@@ -1,6 +1,6 @@
-read_verilog -sv src/tt_um_life.v
-chparam -set N 8 tt_um_life
-synth -top tt_um_life -flatten
+read_verilog -sv src/tt_um_brucelanlan_life.v
+chparam -set N 8 tt_um_brucelanlan_life
+synth -top tt_um_brucelanlan_life -flatten
 dfflibmap -liberty synth/sky130_hd_tt.lib
 abc -liberty synth/sky130_hd_tt.lib
 opt_clean

@@ -7,9 +7,10 @@ Conway's Game of Life on two kinds of "tapeout", plus a reverse-engineering stud
 
 ![VGA output captured from RTL simulation](docs/life_vga.gif)
 
-- **tapeout.net (中文)**: [tapeout_net/README.md](tapeout_net/README.md) — netlist format, circuit census, and the Life design with verification
+- **tapeout.net (中文)**: [tapeout_net/README.md](tapeout_net/README.md) — netlist format, circuit census, the Life design with verification, ready-to-send `tapeout()` calldata, and why the canvas BLIF import costs 3× more
+- **Playground**: [tapeout_net/nand-life-bench.html](tapeout_net/nand-life-bench.html) — the same netlist running in a browser, with a live probe into the 56 gates that decide one cell
 - **Research (中文)**: [docs/research.md](docs/research.md) — how the infinite zoom works, Turing completeness, and whether it can be taped out
-- **RTL**: [src/tt_um_life.v](src/tt_um_life.v) — N×N torus, every cell updated in parallel during vblank, 640×480 VGA on the TinyVGA PMOD pinout
+- **RTL**: [src/tt_um_brucelanlan_life.v](src/tt_um_brucelanlan_life.v) — N×N torus, every cell updated in parallel during vblank, 640×480 VGA on the TinyVGA PMOD pinout
 - **Tiny Tapeout metadata (draft)**: [info.yaml](info.yaml)
 
 ## Tiny Tapeout pins
@@ -32,7 +33,7 @@ Needs `iverilog`, Python 3 with numpy, and `ffmpeg`. The testbench acts like a m
 
 ```sh
 mkdir -p sim
-iverilog -g2012 -o sim/tb.vvp test/tb.v src/tt_um_life.v
+iverilog -g2012 -o sim/tb.vvp test/tb.v src/tt_um_brucelanlan_life.v
 cd sim && vvp -n tb.vvp && python3 ../test/check_and_render.py 16
 ```
 
