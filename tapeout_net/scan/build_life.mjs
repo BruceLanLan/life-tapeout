@@ -46,7 +46,7 @@ export class Builder {
 
 // ---------------------------------------------------------------- rule circuit
 // Live next iff neighbours s in {2,3} and (s == 3 or self): with s = 8*b3 + 4*b2 + 2*b1 + b0
-// that is  !(s >= 4) & b1 & (b0 | self)  — the "(s | self) == 3" trick.
+// that is  !(s >= 4) & b1 & (b0 | self)  — the "(s | self) == 3" identity.
 export function buildRule() {
   const b = new Builder(10);
   const n = [...Array(8).keys()].map((i) => b.input(i));

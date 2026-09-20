@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>NAND Life Bench</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&family=Noto+Sans+SC:wght@400;500;700&display=swap">
 <style>
   :root {
     --ground: #e9ecf0;
@@ -51,7 +51,7 @@
   body {
     background: var(--ground);
     color: var(--ink);
-    font-family: "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
+    font-family: "IBM Plex Sans", "Noto Sans SC", ui-sans-serif, system-ui, sans-serif;
     font-size: 15px;
     line-height: 1.5;
   }
@@ -128,6 +128,10 @@
     font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 11px; padding: 2px 7px; border-radius: 99px;
     background: var(--accent-soft); color: var(--accent); border: 1px solid transparent;
   }
+  :lang(zh) { font-family: "Noto Sans SC", "IBM Plex Sans", system-ui, sans-serif; }
+  .lang { display: inline-flex; border: 1px solid var(--line); border-radius: 6px; overflow: hidden; margin-left: auto; }
+  .lang button { border: 0; border-radius: 0; padding: 5px 10px; font-size: 12px; background: var(--surface); color: var(--muted); }
+  .lang button[aria-pressed="true"] { background: var(--ink); color: var(--ground); }
   @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
 </style>
 
@@ -137,42 +141,42 @@
   <header>
     <h1>NAND Life Bench</h1>
     <span class="tag" id="tag-mode">8×8 torus</span>
+    <div class="lang" role="group" aria-label="language">
+      <button id="lang-en" aria-pressed="true">EN</button>
+      <button id="lang-zh" aria-pressed="false">中文</button>
+    </div>
   </header>
-  <p class="sub">
-    Conway's Life compiled to the only two parts <a href="https://tapeout.net">tapeout.net</a> sells — a NAND gate and a
-    one-bit LATCH — and executed here by the same netlist interpreter the chain runs. Every cell is one
-    <code>REF</code> to a 56-NAND rule circuit; the board itself is 64 LATCHes and no gates at all.
-  </p>
+  <p class="sub" data-i="sub"></p>
 
   <div class="cols">
     <div>
       <div class="panel">
         <div class="panel-head">
-          <h2>Board</h2>
+          <h2 data-i="board"></h2>
           <span id="beat-label" style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--muted)">beat 0</span>
         </div>
         <div class="panel-body">
           <canvas id="board" width="512" height="512" aria-label="Life board, click a cell to probe it"></canvas>
           <div class="controls">
             <button id="play" class="primary">Pause</button>
-            <button id="stepbtn">Step</button>
-            <button id="clear">Clear</button>
-            <label class="ctl">seed
+            <button id="stepbtn" data-i="step"></button>
+            <button id="clear" data-i="clear"></button>
+            <label class="ctl"><span data-i="seed"></span>
               <select id="pattern">
-                <option value="glider">glider</option>
+                <option value="glider" data-i="o_glider"></option>
                 <option value="lwss">LWSS</option>
-                <option value="rpent">R-pentomino</option>
-                <option value="random">random</option>
+                <option value="rpent" data-i="o_rpent"></option>
+                <option value="random" data-i="o_random"></option>
               </select>
             </label>
-            <label class="ctl">size
+            <label class="ctl"><span data-i="size"></span>
               <select id="size">
                 <option value="8" selected>8×8</option>
                 <option value="12">12×12</option>
                 <option value="16">16×16</option>
               </select>
             </label>
-            <label class="ctl">speed
+            <label class="ctl"><span data-i="speed"></span>
               <input id="speed" type="range" min="1" max="20" value="6" style="width:96px">
             </label>
           </div>
@@ -180,7 +184,7 @@
       </div>
 
       <div class="panel">
-        <div class="panel-head"><h2>Rule netlist · 392 bytes</h2></div>
+        <div class="panel-head"><h2 data-i="netlist"></h2></div>
         <div class="panel-body">
           <div class="hex" id="hex"></div>
         </div>
@@ -190,21 +194,21 @@
     <div>
       <div class="panel">
         <div class="panel-head">
-          <h2>Probe</h2>
+          <h2 data-i="probe"></h2>
           <span style="font-size:12px;color:var(--muted)" id="probe-cell">cell (2, 1)</span>
         </div>
         <div class="panel-body">
           <div class="probe-row">
             <div class="nbhd" id="nbhd"></div>
             <div style="font-size:13px;color:var(--muted)">
-              <div>neighbours alive: <b id="p-count" style="font-family:'IBM Plex Mono',monospace;color:var(--ink)">0</b></div>
-              <div>next state: <b id="p-next" style="font-family:'IBM Plex Mono',monospace;color:var(--ink)">0</b></div>
+              <div><span data-i="alive"></span> <b id="p-count" style="font-family:'IBM Plex Mono',monospace;color:var(--ink)">0</b></div>
+              <div><span data-i="next"></span> <b id="p-next" style="font-family:'IBM Plex Mono',monospace;color:var(--ink)">0</b></div>
             </div>
           </div>
           <div class="rule-line"></div>
           <div class="probe-grid" id="bits"></div>
           <div class="probe-legend">
-            <span>56 NAND outputs for this cell</span>
+            <span data-i="legend"></span>
             <span><b id="p-b0">b0</b></span>
             <span><b id="p-b1">b1</b></span>
             <span><b id="p-ge4">≥4</b></span>
@@ -213,33 +217,64 @@
       </div>
 
       <div class="panel">
-        <div class="panel-head"><h2>Tapeout cost</h2></div>
+        <div class="panel-head"><h2 data-i="cost"></h2></div>
         <div class="panel-body">
           <dl class="stats">
-            <dt>Board LATCHes</dt><dd id="s-latch">64</dd>
-            <dt>Top-level NANDs</dt><dd id="s-nand">0</dd>
-            <dt>Rule circuit (taped once)</dt><dd>56 NAND</dd>
-            <dt>Transistors burned</dt><dd><em id="s-total">120</em></dd>
+            <dt data-i="d_latch"></dt><dd id="s-latch">64</dd>
+            <dt data-i="d_nand"></dt><dd id="s-nand">0</dd>
+            <dt data-i="d_rule"></dt><dd>56 NAND</dd>
+            <dt data-i="d_total"></dt><dd><em id="s-total">120</em></dd>
             <div style="grid-column: 1 / -1" class="rule-line"></div>
-            <dt>Gates evaluated per beat</dt><dd id="s-gates">3,648</dd>
-            <dt>Est. gas per beat</dt><dd id="s-gas">9.0M</dd>
-            <dt>Same board without REF</dt><dd id="s-naive">3,579</dd>
+            <dt data-i="d_gates"></dt><dd id="s-gates">3,648</dd>
+            <dt data-i="d_gas"></dt><dd id="s-gas">9.0M</dd>
+            <dt data-i="d_noreuse"></dt><dd id="s-noreuse">3,579</dd>
           </dl>
         </div>
       </div>
     </div>
   </div>
 
-  <footer>
-    Gas figures extrapolate from <code>eth_estimateGas</code> on three deployed circuits (≈2,468 gas per gate).
-    Nothing here touches a wallet. The rule was verified over all 1,024 input combinations and the board against a
-    reference implementation of B3/S23; this page runs the identical netlist bytes those tests ran.
-  </footer>
+  <footer data-i="footer"></footer>
 </div>
 
 <script>
 (() => {
   "use strict";
+  // ---------------------------------------------------------------- i18n
+  const T = {
+    en: {
+      sub: "Conway's Life built from the two primitives of <a href=\"https://tapeout.net\">tapeout.net</a> — a NAND gate and a one-bit LATCH — and executed here by a netlist interpreter written to match the chain's. Every cell is one <code>REF</code> to a 56-NAND rule circuit; the board itself is 64 LATCHes and no gates at all.",
+      board: "Board", step: "Step", clear: "Clear", pause: "Pause", play: "Play",
+      seed: "seed", size: "size", speed: "speed", o_glider: "glider", o_rpent: "R-pentomino", o_random: "random",
+      netlist: "Rule netlist · 392 bytes", probe: "Probe", alive: "neighbours alive:", next: "next state:",
+      legend: "56 NAND outputs for this cell", cost: "Tapeout cost",
+      d_latch: "Board LATCHes", d_nand: "Top-level NANDs", d_rule: "Rule circuit (taped once)", d_total: "Transistors burned",
+      d_gates: "Gates evaluated per beat", d_gas: "Est. gas per beat", d_noreuse: "Same board without reuse",
+      footer: "Gas figures extrapolate from <code>eth_estimateGas</code> on three deployed circuits (≈2,468 gas per gate). Nothing here touches a wallet. The rule was verified over all 1,024 input combinations and the board against a reference implementation of B3/S23; this page runs the identical netlist bytes those tests ran.",
+      beat: (b, n) => `beat ${b} · ${n} alive`, cell: (r, c) => `cell (${r}, ${c})`, torus: (n) => `${n}×${n} torus`,
+    },
+    zh: {
+      sub: "用 <a href=\"https://tapeout.net\">tapeout.net</a> 的两种基本元件 —— NAND 门和一位 LATCH —— 搭出来的生命游戏，由一个按链上语义编写的网表解释器在浏览器里执行。每个细胞是一个指向 56 门规则电路的 <code>REF</code>；棋盘本身是 64 个 LATCH，没有任何门。",
+      board: "棋盘", step: "单步", clear: "清空", pause: "暂停", play: "播放",
+      seed: "图案", size: "尺寸", speed: "速度", o_glider: "滑翔机", o_rpent: "R-pentomino", o_random: "随机",
+      netlist: "规则网表 · 392 字节", probe: "探针", alive: "存活邻居：", next: "下一状态：",
+      legend: "这个细胞的 56 个 NAND 输出", cost: "流片消耗",
+      d_latch: "棋盘 LATCH", d_nand: "顶层 NAND", d_rule: "规则电路（只流片一次）", d_total: "烧掉的晶体管",
+      d_gates: "每拍计算的门数", d_gas: "每拍 gas（估计）", d_noreuse: "同样的棋盘不复用",
+      footer: "gas 由三个已部署电路的 <code>eth_estimateGas</code> 外推（约每门 2,468 gas）。本页不涉及任何钱包。规则电路在全部 1,024 种输入下验证过，棋盘与 B3/S23 参考实现逐拍比对过；本页运行的就是那些测试用的同一份网表字节。",
+      beat: (b, n) => `第 ${b} 拍 · ${n} 个存活`, cell: (r, c) => `细胞 (${r}, ${c})`, torus: (n) => `${n}×${n} 环面`,
+    },
+  };
+  let lang = "en";
+  try { const s = localStorage.getItem("life-tapeout-lang"); if (s === "zh" || s === "en") lang = s; else if (/^zh/i.test(navigator.language || "")) lang = "zh"; } catch {}
+  const L = () => T[lang];
+  function applyLang() {
+    document.querySelectorAll("[data-i]").forEach((el) => { el.innerHTML = L()[el.dataset.i] ?? ""; });
+    document.documentElement.lang = lang === "zh" ? "zh-CN" : "en";
+    document.getElementById("lang-en").setAttribute("aria-pressed", String(lang === "en"));
+    document.getElementById("lang-zh").setAttribute("aria-pressed", String(lang === "zh"));
+    try { localStorage.setItem("life-tapeout-lang", lang); } catch {}
+  }
   // ---------------------------------------------------------------- netlist
   const OP = { NAND: 0, LATCH: 1, REF: 2 };
 
@@ -367,7 +402,7 @@
     ctx.strokeStyle = css("--signal");
     ctx.lineWidth = 2;
     ctx.strokeRect((probeCell.c - 1) * cell + 1, (probeCell.r - 1) * cell + 1, cell * 3 - 2, cell * 3 - 2);
-    document.getElementById("beat-label").textContent = `beat ${beat} · ${board.reduce((a, b) => a + b, 0)} alive`;
+    document.getElementById("beat-label").textContent = L().beat(beat, board.reduce((a, b) => a + b, 0));
   }
 
   const bitsEl = document.getElementById("bits");
@@ -399,7 +434,7 @@
     for (let i = 0; i < RULE_NAND; i++) bitNodes[i].classList.toggle("on", !!sig[base + i]);
     document.getElementById("p-count").textContent = nb.reduce((a, b) => a + b, 0);
     document.getElementById("p-next").textContent = sig[sig.length - 1];
-    document.getElementById("probe-cell").textContent = `cell (${r}, ${c})`;
+    document.getElementById("probe-cell").textContent = L().cell(r, c);
     document.getElementById("p-b0").textContent = `b0=${sig[rule.probes.b0]}`;
     document.getElementById("p-b1").textContent = `b1=${sig[rule.probes.b1]}`;
     document.getElementById("p-ge4").textContent = `s≥4: ${sig[rule.probes.ge4]}`;
@@ -414,8 +449,8 @@
     document.getElementById("s-gates").textContent = fmt(gates);
     document.getElementById("s-gas").textContent = (gates * 2468 + 40000 > 1e6)
       ? ((gates * 2468 + 40000) / 1e6).toFixed(1) + "M" : fmt(gates * 2468 + 40000);
-    document.getElementById("s-naive").textContent = fmt(Math.round(N * N * 55.9));
-    document.getElementById("tag-mode").textContent = `${N}×${N} torus`;
+    document.getElementById("s-noreuse").textContent = fmt(Math.round(N * N * 55.9));
+    document.getElementById("tag-mode").textContent = L().torus(N);
   }
 
   // hex dump with the first element highlighted
@@ -440,7 +475,7 @@
 
   playBtn.addEventListener("click", () => {
     playing = !playing;
-    playBtn.textContent = playing ? "Pause" : "Play";
+    playBtn.textContent = playing ? L().pause : L().play;
     playBtn.classList.toggle("primary", playing);
   });
   document.getElementById("stepbtn").addEventListener("click", () => { advance(); draw(); drawProbe(); });
@@ -470,6 +505,11 @@
     board[r * N + c] ^= 1; draw(); drawProbe();
   });
 
+  const setLang = (l) => { lang = l; applyLang(); playBtn.textContent = playing ? L().pause : L().play; stats(); draw(); drawProbe(); };
+  document.getElementById("lang-en").addEventListener("click", () => setLang("en"));
+  document.getElementById("lang-zh").addEventListener("click", () => setLang("zh"));
+  applyLang();
+  playBtn.textContent = L().pause;
   seed("glider");
   stats(); draw(); drawProbe();
   requestAnimationFrame(frame);

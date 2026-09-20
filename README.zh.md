@@ -2,14 +2,14 @@
 
 [English](README.md) · **中文** · [展示页](https://brucelanlan.github.io/life-tapeout/) · [Playground](https://brucelanlan.github.io/life-tapeout/playground.html)
 
-把 Conway 的生命游戏拆开，在两种完全不同的"流片"上重新搭起来：
+一个学习项目：研究 Conway 的生命游戏，并在两种完全不同的"流片"上把它重新搭起来。
 
 | 方向 | 是什么 | 这里有什么 |
 |---|---|---|
-| **[tapeout.net](https://tapeout.net)** | BSC 链上协议：电路只由两种按 token 计价的元件组成 —— NAND 和 LATCH；任何已流片的电路都可以被别人用 `REF` 复用 | 协议逆向完毕；全网 **27,671** 个链上电路普查、**12,015** 个识别出功能；Life 设计 8×8 只烧 **120 个晶体管**（平铺写法要 3,579 个） |
+| **[tapeout.net](https://tapeout.net)** | BSC 链上协议：电路只由两种按 token 计价的元件组成 —— NAND 和 LATCH；任何已流片的电路都可以被别人用 `REF` 复用 | 从公开的前端和合约整理出协议的工作方式；把链上公开的电路读了一遍作为参考（看了 **27,671** 个，**12,015** 个对上了已知功能）；一个用 `REF` 复用把 8×8 做到 **120 个晶体管** 的 Life 设计（不复用约 3,579 个） |
 | **[Tiny Tapeout](https://tinytapeout.com)** | 真实硅片：很多小设计拼在一颗 sky130 芯片上 | Verilog Life 引擎，640×480 VGA 输出，显示器式测试平台 + 金模型比对，已综合估面积 |
 
-起点是对 oimo 的 [Life Universe](https://oimo.io/works/life)（"无限递归"的生命游戏）的逆向。一句话结论：那个页面运行时一步 Life 都不算，是建立在 4 MB 预计算表上的渲染技巧 —— 这正是它无论在链上还是硅片上都流不了片的原因。完整分析见 [docs/research.md](docs/research.md)。
+起点是阅读 oimo 的 [Life Universe](https://oimo.io/works/life)（"无限递归"的生命游戏）公开的源码，想弄明白它是怎么做到的。一句话：这是一件很漂亮的工程作品 —— 对一个 OTCA metapixel 做 HashLife 预计算，再用着色器遍历生成的四叉树；正因为重活都在离线阶段做完了，它并不适合直接搬到芯片或链上。学习笔记见 [docs/research.md](docs/research.md)。
 
 ![RTL 仿真截取的 VGA 输出](docs/life_vga.gif)
 
@@ -17,12 +17,12 @@
 
 ## 亮点
 
-- **网表格式逆向并对拍。** tapeout.net 二进制网表（`NAND` / `LATCH` / `REF`）的解码器、编码器和模拟器，用链上已部署电路的 `eval()` 验证过，包括一个用了 `REF` 的电路。
-- **全链普查。** 每个项目的每个电路都拉下来（原始数据不入库，`npm run census` 可重新生成），小型组合电路跑真值表，和 39 个参考函数比对。加法器、乘法器、译码器、比较器、popcount 的最小已知实现都列成了表 —— 13,401 个候选里只有 4 个真的用了 `REF`。
-- **56 门的 Life 规则电路，穷举验证**，比 Yosys+ABC 的 63 门更省。另一个变体复用链上现成的 55 门 popcount，自己只需要 12 个 NAND。
+- **弄清了网表格式并对拍。** 根据平台公开的前端代码写出 tapeout.net 二进制网表（`NAND` / `LATCH` / `REF`）的解码器、编码器和模拟器，用链上已部署电路的 `eval()` 验证过，包括一个用了 `REF` 的电路。
+- **链上公开电路的学习整理。** 通过公开的 `netlist()` 接口读取已上链的电路（原始数据不入库，`npm run survey` 可重新生成），小型组合电路跑真值表，和 39 个参考函数比对。加法器、乘法器、译码器、比较器、popcount 里找到的最小实现列成了表，并注明出自哪个项目。`REF` 在链上目前用得还不多（13,401 个候选里 4 个），这正是它值得研究的地方。
+- **56 门的 Life 规则电路，穷举验证**（同一功能 Yosys+ABC 综合为 63 门）。另一个变体建立在链上现成的 55 门 popcount 之上，自己只需要 12 个 NAND。
 - **顶层零门的棋盘。** N² 个 LATCH 存状态，每个细胞是一个指向规则电路的 `REF`。为什么这些 LATCH 省不掉，文档里有论证。
 - **可直接发送的 calldata**，对链空跑验证过：模拟的 `tapeout()` 调用恰好 revert 在销毁 token 那一步（`ERC1155InsufficientBalance`），说明编码确实到达了正确的函数。
-- **官网画布贵 3 倍。** 把规则电路导出成 BLIF 导入官方画布，能导入、能过自检，但画布把每个 NAND 编译成 3 个门（170 对 56）。直接发 calldata 才是省钱的路线。
+- **两种提交方式。** 把规则电路导出成 BLIF 导入官方画布，能导入、能过自检；画布通用的 BLIF 编译器会把每个 2 输入 `.names` 展开成 3 个门（对这份网表是 170 对 56），所以对于手工优化过的纯 NAND 网表，直接调用 `tapeout()` 更省。
 - **两个交互页面。** [playground](docs/playground.html) 在浏览器里跑同一份网表，可以实时探测单个细胞的 56 个门；还有一个中英双语的[展示页](docs/index.html)。
 
 ## 目录结构
@@ -30,9 +30,9 @@
 ```
 tapeout_net/            tapeout.net 方向
   README.md / README.en.md   完整报告（中文 / English）
-  scan/                 脚本：网表编解码 + 模拟器、普查、Life 构建、calldata、BLIF 导出
+  scan/                 脚本：网表编解码 + 模拟器、电路整理、Life 构建、calldata、BLIF 导出
   scan/out/             生成的网表（.hex）、BLIF、calldata.json
-  scan/data/            普查缓存（已忽略；只提交了复用的 popcount8 网表）
+  scan/data/            整理缓存（已忽略；只提交了复用的 popcount8 网表）
   life_core.v           不用 REF 的基线，用于 Yosys 数 NAND
 src/                    Tiny Tapeout Verilog（tt_um_brucelanlan_life）
 test/                   Icarus 测试平台 + 金模型比对 / GIF 渲染
@@ -50,7 +50,7 @@ cd tapeout_net/scan
 npm test                 # 构建两个版本的规则电路和网格并验证（穷举 + 滑翔机）
 npm run demo             # 在终端里看滑翔机在网表模拟器里爬
 npm run calldata         # 打印规则电路的 mint / tapeout calldata（不发送）
-npm run census           # 重新扫链（公共 RPC 上约一小时）
+npm run survey           # 重新读取链上公开电路（公共 RPC 上约一小时）
 ```
 
 Verilog 方向（`iverilog`、Python 3 + numpy、`ffmpeg`）：
@@ -92,6 +92,12 @@ cd sim && vvp -n tb.vvp && python3 ../test/check_and_render.py 16
 
 - 两个方向都没有真正流片。tapeout.net 的 calldata 已生成并空跑验证，mint 和发送由仓库所有者决定；Tiny Tapeout 的 GDS 流程（OpenLane）没有跑，格数是估计值。
 - 链上 `beat()` 的真实 gas 是从 `eval()` 实测外推的（约每门 2,468 gas）；挖矿合约的 1,200 万 `maxRunGas` 是否也约束 `beat()`，没能确认。
+
+## 致谢
+
+- [saharan](https://github.com/saharan)：Life Universe 及其公开源码，本项目只是学习它。
+- [tapeout.net](https://tapeout.net) 团队：协议本身，以及把电路做成可公开读取；还有参考表里出现的每一个项目。
+- [Tiny Tapeout](https://tinytapeout.com)：让真实流片变得触手可及。
 
 ## 许可
 

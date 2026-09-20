@@ -1,8 +1,8 @@
-# Life Universe 逆向分析 & 流片可行性
+# Life Universe 学习笔记 & 流片可行性
 
 研究对象：<https://oimo.io/works/life>（作者 saharan，源码公开于 <https://github.com/saharan/works/tree/main/life>，Haxe + WebGL2）。
 
-## 1. 逆向：“无限递归”是怎么做的
+## 1. 读源码：“无限递归”是怎么做到的
 
 **结论：网页运行时一步 Life 都不算，全是查预计算表。**
 

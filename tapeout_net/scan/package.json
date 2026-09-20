@@ -2,14 +2,14 @@
   "name": "life-tapeout-scan",
   "version": "1.0.0",
   "private": true,
-  "description": "tapeout.net netlist codec, on-chain circuit census, and Game of Life builders",
+  "description": "tapeout.net netlist codec, a survey of public on-chain circuits, and Game of Life builders",
   "type": "module",
   "engines": { "node": ">=22" },
   "scripts": {
     "test": "node build_life.mjs && node build_life_ref.mjs && node blif.mjs",
     "demo": "node demo.mjs 8 24",
     "calldata": "node make_calldata.mjs 8",
-    "census": "node scan_info.mjs && node classify2.mjs",
+    "survey": "node scan_info.mjs && node classify2.mjs",
     "gas": "node gas_probe.mjs"
   },
   "license": "MIT"

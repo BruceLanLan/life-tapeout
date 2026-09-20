@@ -1,4 +1,4 @@
-// Second-pass census: includes circuits that use REF (resolved recursively) and a
+// Second-pass survey: includes circuits that use REF (resolved recursively) and a
 // wider library of reference functions. Read-only.
 import fs from "node:fs";
 import { batchCall, callData, decodeBytes, SEL } from "./rpc.mjs";

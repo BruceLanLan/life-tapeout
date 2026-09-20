@@ -4,11 +4,11 @@
 
 [tapeout.net](https://tapeout.net) (TapeOut Protocol, on BSC) turns circuits into NFTs. The canvas has five primitives — input pin, output pin, constant 0/1, **NAND**, and **LATCH** (one bit of state, updated every beat). Each NAND or LATCH costs one "transistor" token; "taping out" burns the tokens and mints a circuit NFT.
 
-This directory is a reverse-engineering record of that protocol and a complete design of Conway's Game of Life on top of it. **Everything here is read-only analysis: no wallet was connected, no transaction was sent, no money was spent.**
+This directory holds study notes on that protocol and a complete design of Conway's Game of Life on top of it. **Everything here is read-only analysis: no wallet was connected, no transaction was sent, no money was spent.**
 
-## 1. Protocol reverse-engineering
+## 1. How the protocol works
 
-### Netlist format (from the front end's `assets/netlist-*.js`)
+### Netlist format (as read from the public front-end code, `assets/netlist-*.js`)
 
 Signal numbering: `0` = constant 0, `1` = constant 1, `2 .. 2+nIn-1` = input pins, then every element appends its own output signals in order. **The circuit's outputs are the last nOut signals.**
 
@@ -41,15 +41,15 @@ Inputs and outputs are packed into bytes **little-endian bit order**.
 - 393 of the 931 projects have a mint price of 0, some with supply left. Protocol fees: 0.0001 BNB per mint call, 0.0002 BNB per tapeout, plus gas.
 - The canvas can import **BLIF**, so Yosys output can be dragged in — but see §4 for what that costs.
 
-## 2. Census of what is already on chain
+## 2. A survey of the public circuits on chain
 
 `scan_info.mjs` scanned all 931 projects: **27,671 circuits** (9.67 million gates in total). `classify.mjs` downloads the small combinational ones, runs their truth tables locally and matches them against reference functions.
 
 The second pass ([scan/classify2.mjs](scan/classify2.mjs)) resolves circuits that use REF recursively and widens the library to 39 functions: **12,015 of 13,401 candidates identified**. Limits remain: only stateless circuits with at most 14 inputs whose shape matches the reference table. So the table below lists "the smallest implementation within the identified range", not a global optimum, and "there is no Life rule on chain" holds only within that range.
 
-An unexpected finding: **only 4 of the 13,401 candidates actually use REF.** Cross-circuit reuse — the mechanism that makes token savings possible — is almost unused on chain.
+One observation: 4 of the 13,401 candidates use REF today. Cross-circuit reuse is still early on the platform, and it is exactly the mechanism this design leans on.
 
-The raw census data is not committed (`npm run census` regenerates it in about an hour). Summary of what was identified:
+The raw data is not committed (`npm run survey` regenerates it in about an hour). Summary of what was identified, with credit to the projects:
 
 | Function | Smallest gate count | Project / circuit id |
 |---|---|---|
@@ -81,7 +81,7 @@ No ready-made Life rule was found on chain, so that part has to be built.
 [scan/build_life.mjs](scan/build_life.mjs) `buildRule()`, 10 inputs (8 neighbours + self + seed) → 1 output:
 
 - three full adders and one half adder sum the 8 neighbours (41 gates);
-- the decision uses the `(s | self) == 3` trick: only `!(s≥4) & s1 & (s0 | self)` is needed, not the full 4-bit count;
+- the decision uses the `(s | self) == 3` identity: only `!(s≥4) & s1 & (s0 | self)` is needed, not the full 4-bit count;
 - the `seed` input is ORed into the result to inject an initial pattern, costing 2 gates (reusing an inverted intermediate).
 
 **Verified exhaustively over all 1,024 inputs.** For comparison, Yosys + ABC synthesises the same function to 63 gates.
@@ -90,14 +90,14 @@ No ready-made Life rule was found on chain, so that part has to be built.
 
 [scan/build_life_ref.mjs](scan/build_life_ref.mjs): REF TapeOut #3151 (55-gate popcount8), take the 4-bit neighbour count, and finish `!(b3|b2) & b1 & (b0|self)` plus seed injection in 12 NANDs. Also verified exhaustively.
 
-The price is more gates per beat (68 per cell instead of 57 — the popcount produces a full count, more than Life needs). **Cheaper in tokens, dearer in gas.**
+The price is more gates per beat (68 per cell instead of 57 — the popcount produces a full count, more than Life needs). **Fewer tokens, more gas per beat.**
 
 ### Why the top-level LATCHes cannot be avoided
 
 REF inputs may only reference earlier signals; only a LATCH's d may reference forward. So **every feedback loop across cells must pass through a top-level LATCH**:
 
 - Making the "board storage" a reusable sub-circuit (say, REF-ing someone's 64-bit register) does not work — the register REF would have to come before the rule REFs to expose the current state, but its inputs (the next state) depend on the rule REFs' outputs. That is a cycle.
-- So N² LATCHes are structurally unavoidable, and **120 transistors (64 LATCH + 56 NAND) is essentially the floor for 8×8**, unless someone has already taped out a whole Life board (nobody has).
+- So N² LATCHes are structurally unavoidable, and **120 transistors (64 LATCH + 56 NAND) is essentially the floor for 8×8**, unless a whole Life board has already been taped out for reuse (none was found).
 
 ### The grid: zero NANDs at the top level
 
@@ -133,7 +133,7 @@ node find_refs.mjs                     # find on-chain circuits that use REF
 node demo.mjs 8 24                     # watch a glider in the terminal (N need not be a power of two)
 node gas_probe.mjs                     # measure on-chain eval() gas
 node verify_chain.mjs 0xFAc299310ca53DB70De49F5e11D3B14A41B1Ef75 1 6   # simulator vs on-chain eval
-node scan_info.mjs && node classify2.mjs   # redo the census (~1 hour, public RPCs rate-limit)
+node scan_info.mjs && node classify2.mjs   # redo the survey (~1 hour, public RPCs rate-limit)
 ```
 
 ### Baseline: flat tiling without REF (Yosys)
@@ -149,7 +149,7 @@ node scan_info.mjs && node classify2.mjs   # redo the census (~1 hour, public RP
 
 ### About oimo's infinite recursion
 
-One OTCA metapixel is 2048×2048 ≈ 4.2 million cells; even with REF that is 4.2 million LATCHes. Not realistic on chain, same conclusion as for silicon: **recursive zoom is a rendering trick, not synthesisable computation.**
+One OTCA metapixel is 2048×2048 ≈ 4.2 million cells; even with REF that is 4.2 million LATCHes. Not realistic on chain, same conclusion as for silicon: **the recursive zoom is a pre-computation and rendering achievement, not something to synthesise gate by gate.**
 
 ## 4. If you do decide to tape out
 
