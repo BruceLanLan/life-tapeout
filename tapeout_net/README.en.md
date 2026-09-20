@@ -184,7 +184,7 @@ One more hard limit confirmed from the front end: **a single tapeout transaction
 
 ## 5. Browser playground
 
-[nand-life-bench.html](nand-life-bench.html) runs the same netlist in a browser: watch the board, click a cell to see its 3×3 neighbourhood and the 56 NANDs flipping live. The rule code embedded in the page was re-checked with node and is identical to the repository's (56 gates, 392 bytes, 0 mismatches over 1,024 inputs).
+[docs/playground.html](../docs/playground.html) (live: https://brucelanlan.github.io/life-tapeout/playground.html) runs the same netlist in a browser: watch the board, click a cell to see its 3×3 neighbourhood and the 56 NANDs flipping live. The rule code embedded in the page was re-checked with node and is identical to the repository's (56 gates, 392 bytes, 0 mismatches over 1,024 inputs).
 
 ## 6. Not done / unconfirmed
 

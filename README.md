@@ -1,6 +1,6 @@
 # life-tapeout
 
-**English** · [中文](README.zh.md) · Showcase: [source](docs/index.html) / [live](https://claude.ai/artifact/3TVHPVTmZtXJyUWcrEGKW8) · Playground: [source](tapeout_net/nand-life-bench.html) / [live](https://claude.ai/artifact/Xcxn2nzNdhSzzX4dGwLQB9)
+**English** · [中文](README.zh.md) · [Showcase](https://brucelanlan.github.io/life-tapeout/) · [Playground](https://brucelanlan.github.io/life-tapeout/playground.html)
 
 Conway's Game of Life, taken apart and rebuilt for two very different kinds of "tapeout":
 
@@ -23,7 +23,7 @@ Nothing in this repository has been sent on-chain. Every on-chain interaction is
 - **A board with zero top-level gates.** N² LATCHes hold the state; each cell is one `REF` to the rule. Why the LATCHes cannot be factored out is argued in the docs.
 - **Ready-to-send calldata**, dry-run against the chain: the simulated `tapeout()` call reverts exactly at the token burn (`ERC1155InsufficientBalance`), proving the encoding reaches the right function.
 - **The canvas costs 3×.** Importing the rule as BLIF into the official canvas works and passes its self-check, but the canvas compiles each NAND into three gates (170 vs 56). Raw calldata is the efficient route.
-- **Two interactive pages.** A [playground](tapeout_net/nand-life-bench.html) that runs the identical netlist in a browser with a live probe into the 56 gates of one cell, and a bilingual [showcase page](docs/index.html).
+- **Two interactive pages.** A [playground](docs/playground.html) that runs the identical netlist in a browser with a live probe into the 56 gates of one cell, and a bilingual [showcase page](docs/index.html).
 
 ## Repository layout
 
@@ -32,12 +32,11 @@ tapeout_net/            tapeout.net track
   README.md / README.en.md   the full write-up (中文 / English)
   scan/                 scripts: netlist codec + simulator, census, Life builders, calldata, BLIF export
   scan/out/             generated netlists (.hex), BLIF files, calldata.json
-  nand-life-bench.html  browser playground
   life_core.v           no-REF baseline for the Yosys NAND count
 src/                    Tiny Tapeout Verilog (tt_um_brucelanlan_life)
 test/                   Icarus testbench + golden-model check / GIF renderer
 synth/                  Yosys scripts for the sky130 area estimate
-docs/                   research notes, showcase page, VGA capture
+docs/                   GitHub Pages: showcase page, playground, research notes, VGA capture
 info.yaml               Tiny Tapeout project metadata (draft)
 ```
 

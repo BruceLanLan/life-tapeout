@@ -184,7 +184,7 @@ node make_calldata.mjs 8 <项目的Circuits地址> <规则电路id>   # 规则�
 
 ## 5. 浏览器里的 playground
 
-[nand-life-bench.html](nand-life-bench.html)：把同一份网表搬进浏览器，可以看棋盘跑，点某个细胞会显示它的 3×3 邻域和那 56 个 NAND 的实时翻转。页面里的规则电路代码经 node 复核，与仓库里的完全一致（56 门、392 字节、1024 种输入 0 不一致）。
+[docs/playground.html](../docs/playground.html)（在线：https://brucelanlan.github.io/life-tapeout/playground.html）：把同一份网表搬进浏览器，可以看棋盘跑，点某个细胞会显示它的 3×3 邻域和那 56 个 NAND 的实时翻转。页面里的规则电路代码经 node 复核，与仓库里的完全一致（56 门、392 字节、1024 种输入 0 不一致）。
 
 ## 6. 没做 / 待确认
 
