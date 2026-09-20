@@ -136,7 +136,29 @@ node scan_info.mjs && node classify.mjs   # 重跑普查（约 1 小时，受公
 
 一个 OTCA metapixel 是 2048×2048 ≈ 420 万个细胞，即使按 REF 方案也要 420 万个 LATCH。链上不现实，结论和硅片流片一致：**递归缩放是渲染技巧，不是可综合的计算**。
 
-## 4. 没做 / 待确认
+## 4. 真要上链时怎么做
+
+[scan/make_calldata.mjs](scan/make_calldata.mjs) 生成可以直接用钱包发送的 calldata，自己不发任何交易：
+
+```sh
+node make_calldata.mjs 8                                   # 先出规则电路的 mint + tapeout calldata
+node make_calldata.mjs 8 <项目的Circuits地址> <规则电路id>   # 规则流片后，再出网格的
+```
+
+顺序是：mint 56 个 NAND → `tapeout(ruleNetlist, 10, 1)` → 从 `TapedOut` 事件里拿到 circuitId → mint 64 个 LATCH → `tapeout(gridNetlist, 64, 64)`。
+
+脚本会做这些只读的预检：
+
+- 规则电路 1024 种输入穷举自检；
+- 网表编码 → 解码 → 再编码的往返一致性；
+- 读链上的 `TAPEOUT_FEE()`（实测 0.0002 BNB）和项目已有电路数；
+- **用 `eth_call` 空跑一次 tapeout**：从一个没有 token 的地址发，结果 revert 在 `ERC1155InsufficientBalance`（OpenZeppelin 的自定义错误 `0x03dee4c5`）。这说明 selector、偏移量、长度字段全部正确，调用一路走到了销毁 token 那一步，只差 token。
+
+## 5. 浏览器里的 playground
+
+[nand-life-bench.html](nand-life-bench.html)：把同一份网表搬进浏览器，可以看棋盘跑，点某个细胞会显示它的 3×3 邻域和那 56 个 NAND 的实时翻转。页面里的规则电路代码经 node 复核，与仓库里的完全一致（56 门、392 字节、1024 种输入 0 不一致）。
+
+## 6. 没做 / 待确认
 
 - 没有连钱包、没有发交易。真要上链，需要你自己 mint token 并调用 `tapeout(netlist, nIn, nOut)`。
 - `beat()` 的真实 gas 和它是否受 `maxRunGas` 约束，没能确认（合约是代理，直接调用 revert）。上表的 gas 是用 `eval()` 实测外推的。

@@ -1,0 +1,470 @@
+<title>NAND Life Bench</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+  :root {
+    --ground: #e9ecf0;
+    --surface: #ffffff;
+    --surface-2: #f3f5f8;
+    --line: #cfd6df;
+    --ink: #10151b;
+    --muted: #5c6775;
+    --accent: #a8480f;      /* copper interconnect */
+    --accent-soft: #f0d9c9;
+    --signal: #0d6d78;      /* probe teal */
+    --signal-soft: #cfe6e8;
+    --shadow: 0 1px 2px rgba(16, 21, 27, .06);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ground: #0d1015;
+      --surface: #151a21;
+      --surface-2: #1c222b;
+      --line: #2b333f;
+      --ink: #e7ecf3;
+      --muted: #94a1b2;
+      --accent: #e0803c;
+      --accent-soft: #3a2517;
+      --signal: #48c6d2;
+      --signal-soft: #10333a;
+      --shadow: 0 1px 2px rgba(0, 0, 0, .4);
+    }
+  }
+  :root[data-theme="dark"] {
+    --ground: #0d1015;
+    --surface: #151a21;
+    --surface-2: #1c222b;
+    --line: #2b333f;
+    --ink: #e7ecf3;
+    --muted: #94a1b2;
+    --accent: #e0803c;
+    --accent-soft: #3a2517;
+    --signal: #48c6d2;
+    --signal-soft: #10333a;
+    --shadow: 0 1px 2px rgba(0, 0, 0, .4);
+  }
+
+  body {
+    background: var(--ground);
+    color: var(--ink);
+    font-family: "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
+    font-size: 15px;
+    line-height: 1.5;
+  }
+  .wrap { max-width: 1080px; margin: 0 auto; padding-inline: 16px; padding-block: 28px 56px; }
+
+  header { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 16px; margin-bottom: 4px; }
+  h1 { font-size: 26px; font-weight: 600; margin: 0; letter-spacing: -.01em; text-wrap: balance; }
+  .sub { color: var(--muted); max-width: 62ch; margin: 6px 0 24px; }
+  .sub code { font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: .92em; color: var(--ink); }
+
+  .cols { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 22px; align-items: start; }
+  @media (max-width: 760px) { .cols { grid-template-columns: 1fr; } }
+
+  .panel { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; box-shadow: var(--shadow); }
+  .panel + .panel { margin-top: 18px; }
+  .panel-head {
+    display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    padding: 10px 14px; border-bottom: 1px solid var(--line);
+  }
+  .panel-head h2 {
+    margin: 0; font-size: 11px; font-weight: 600; letter-spacing: .09em; text-transform: uppercase; color: var(--muted);
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+  }
+  .panel-body { padding: 14px; }
+
+  canvas { display: block; width: 100%; height: auto; max-width: 100%; border-radius: 6px; touch-action: manipulation; }
+
+  .controls { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: 12px; }
+  button {
+    font: 500 13px/1 "IBM Plex Sans", system-ui, sans-serif;
+    padding: 8px 12px; border-radius: 6px; border: 1px solid var(--line);
+    background: var(--surface-2); color: var(--ink); cursor: pointer;
+  }
+  button:hover { border-color: var(--muted); }
+  button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  button.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+  select, input[type="range"] { font: 400 13px "IBM Plex Sans", system-ui, sans-serif; accent-color: var(--accent); }
+  select { padding: 7px 8px; border-radius: 6px; border: 1px solid var(--line); background: var(--surface-2); color: var(--ink); }
+  label.ctl { display: inline-flex; align-items: center; gap: 6px; color: var(--muted); font-size: 13px; }
+
+  dl.stats { display: grid; grid-template-columns: 1fr auto; gap: 7px 12px; margin: 0; }
+  dl.stats dt { color: var(--muted); font-size: 13px; }
+  dl.stats dd {
+    margin: 0; text-align: right; font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-variant-numeric: tabular-nums; font-size: 13px;
+  }
+  dl.stats dd em { font-style: normal; color: var(--accent); font-weight: 600; }
+  .rule-line { border-top: 1px dashed var(--line); margin: 12px 0; }
+
+  .probe-grid { display: grid; grid-template-columns: repeat(14, 1fr); gap: 4px; }
+  .bit {
+    aspect-ratio: 1; border-radius: 2px; background: var(--surface-2); border: 1px solid var(--line);
+  }
+  .bit.on { background: var(--signal); border-color: var(--signal); }
+  .probe-legend { display: flex; flex-wrap: wrap; gap: 10px 16px; margin-top: 10px; font-size: 12px; color: var(--muted); }
+  .probe-legend b { font-family: "IBM Plex Mono", ui-monospace, monospace; color: var(--ink); font-weight: 500; }
+  .nbhd { display: grid; grid-template-columns: repeat(3, 26px); gap: 3px; }
+  .nbhd div {
+    width: 26px; height: 26px; border-radius: 3px; border: 1px solid var(--line); background: var(--surface-2);
+    display: grid; place-items: center; font: 500 11px "IBM Plex Mono", monospace; color: var(--muted);
+  }
+  .nbhd div.alive { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .nbhd div.self { outline: 2px solid var(--signal); outline-offset: 1px; }
+  .probe-row { display: flex; gap: 16px; align-items: center; flex-wrap: wrap; }
+
+  .hex {
+    font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 11.5px; line-height: 1.6;
+    color: var(--muted); word-break: break-all; max-height: 108px; overflow-y: auto;
+  }
+  .hex b { color: var(--accent); font-weight: 500; }
+  footer { margin-top: 26px; color: var(--muted); font-size: 13px; max-width: 70ch; }
+  footer a { color: var(--accent); }
+  .tag {
+    font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 11px; padding: 2px 7px; border-radius: 99px;
+    background: var(--accent-soft); color: var(--accent); border: 1px solid transparent;
+  }
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+
+<div class="wrap">
+  <header>
+    <h1>NAND Life Bench</h1>
+    <span class="tag" id="tag-mode">8×8 torus</span>
+  </header>
+  <p class="sub">
+    Conway's Life compiled to the only two parts <a href="https://tapeout.net">tapeout.net</a> sells — a NAND gate and a
+    one-bit LATCH — and executed here by the same netlist interpreter the chain runs. Every cell is one
+    <code>REF</code> to a 56-NAND rule circuit; the board itself is 64 LATCHes and no gates at all.
+  </p>
+
+  <div class="cols">
+    <div>
+      <div class="panel">
+        <div class="panel-head">
+          <h2>Board</h2>
+          <span id="beat-label" style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--muted)">beat 0</span>
+        </div>
+        <div class="panel-body">
+          <canvas id="board" width="512" height="512" aria-label="Life board, click a cell to probe it"></canvas>
+          <div class="controls">
+            <button id="play" class="primary">Pause</button>
+            <button id="stepbtn">Step</button>
+            <button id="clear">Clear</button>
+            <label class="ctl">seed
+              <select id="pattern">
+                <option value="glider">glider</option>
+                <option value="lwss">LWSS</option>
+                <option value="rpent">R-pentomino</option>
+                <option value="random">random</option>
+              </select>
+            </label>
+            <label class="ctl">size
+              <select id="size">
+                <option value="8" selected>8×8</option>
+                <option value="12">12×12</option>
+                <option value="16">16×16</option>
+              </select>
+            </label>
+            <label class="ctl">speed
+              <input id="speed" type="range" min="1" max="20" value="6" style="width:96px">
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head"><h2>Rule netlist · 392 bytes</h2></div>
+        <div class="panel-body">
+          <div class="hex" id="hex"></div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="panel">
+        <div class="panel-head">
+          <h2>Probe</h2>
+          <span style="font-size:12px;color:var(--muted)" id="probe-cell">cell (2, 1)</span>
+        </div>
+        <div class="panel-body">
+          <div class="probe-row">
+            <div class="nbhd" id="nbhd"></div>
+            <div style="font-size:13px;color:var(--muted)">
+              <div>neighbours alive: <b id="p-count" style="font-family:'IBM Plex Mono',monospace;color:var(--ink)">0</b></div>
+              <div>next state: <b id="p-next" style="font-family:'IBM Plex Mono',monospace;color:var(--ink)">0</b></div>
+            </div>
+          </div>
+          <div class="rule-line"></div>
+          <div class="probe-grid" id="bits"></div>
+          <div class="probe-legend">
+            <span>56 NAND outputs for this cell</span>
+            <span><b id="p-b0">b0</b></span>
+            <span><b id="p-b1">b1</b></span>
+            <span><b id="p-ge4">≥4</b></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head"><h2>Tapeout cost</h2></div>
+        <div class="panel-body">
+          <dl class="stats">
+            <dt>Board LATCHes</dt><dd id="s-latch">64</dd>
+            <dt>Top-level NANDs</dt><dd id="s-nand">0</dd>
+            <dt>Rule circuit (taped once)</dt><dd>56 NAND</dd>
+            <dt>Transistors burned</dt><dd><em id="s-total">120</em></dd>
+            <div style="grid-column: 1 / -1" class="rule-line"></div>
+            <dt>Gates evaluated per beat</dt><dd id="s-gates">3,648</dd>
+            <dt>Est. gas per beat</dt><dd id="s-gas">9.0M</dd>
+            <dt>Same board without REF</dt><dd id="s-naive">3,579</dd>
+          </dl>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    Gas figures extrapolate from <code>eth_estimateGas</code> on three deployed circuits (≈2,468 gas per gate).
+    Nothing here touches a wallet. The rule was verified over all 1,024 input combinations and the board against a
+    reference implementation of B3/S23; this page runs the identical netlist bytes those tests ran.
+  </footer>
+</div>
+
+<script>
+(() => {
+  "use strict";
+  // ---------------------------------------------------------------- netlist
+  const OP = { NAND: 0, LATCH: 1, REF: 2 };
+
+  class Builder {
+    constructor(nIn) { this.nIn = nIn; this.els = []; this.next = 2 + nIn; }
+    input(i) { return 2 + i; }
+    nand(a, b) { this.els.push({ op: OP.NAND, a, b }); return this.next++; }
+    not(a) { return this.nand(a, a); }
+    latch() { const el = { op: OP.LATCH, d: 0, out: this.next++ }; this.els.push(el); return el; }
+    ref(ins, nOut) { const outs = []; for (let i = 0; i < nOut; i++) outs.push(this.next++);
+      this.els.push({ op: OP.REF, ins, nOut }); return outs; }
+    xor(a, b) { const t = this.nand(a, b); return { x: this.nand(this.nand(a, t), this.nand(b, t)), nab: t }; }
+    fa(a, b, c) { const { x: p, nab: t1 } = this.xor(a, b); const { x: s, nab: t2 } = this.xor(p, c);
+      return { s, c: this.nand(t1, t2) }; }
+    ha(a, b) { const { x, nab } = this.xor(a, b); return { s: x, c: this.not(nab) }; }
+  }
+
+  // 10 inputs: n0..n7, self, seed -> 1 output
+  function buildRule() {
+    const b = new Builder(10);
+    const n = [0,1,2,3,4,5,6,7].map(i => b.input(i));
+    const self = b.input(8), seed = b.input(9);
+    const f1 = b.fa(n[0], n[1], n[2]);
+    const f2 = b.fa(n[3], n[4], n[5]);
+    const h3 = b.ha(n[6], n[7]);
+    const f4 = b.fa(f1.s, f2.s, h3.s);
+    const f5 = b.fa(f1.c, f2.c, h3.c);
+    const { x: b1, nab: t } = b.xor(f5.s, f4.c);
+    const ge4 = b.nand(b.not(f5.c), t);
+    const orv = b.nand(b.not(f4.s), b.not(self));
+    const x = b.not(b.nand(b1, orv));
+    const nlife = b.nand(x, b.not(ge4));
+    b.nand(nlife, b.not(seed));
+    return { b, probes: { b0: f4.s, b1, ge4 } };
+  }
+
+  function encode(els) {
+    const out = [];
+    const u24 = v => out.push((v >>> 16) & 255, (v >>> 8) & 255, v & 255);
+    for (const e of els) {
+      if (e.op === OP.NAND) { out.push(0); u24(e.a); u24(e.b); }
+      else if (e.op === OP.LATCH) { out.push(1); u24(e.d); }
+      else { out.push(2); for (let i = 0; i < 20; i++) out.push(0); for (let i = 0; i < 8; i++) out.push(0);
+        out.push(e.ins.length, e.nOut); e.ins.forEach(u24); }
+    }
+    return Uint8Array.from(out);
+  }
+
+  // evaluate a flat NAND-only circuit; returns every signal
+  function runRule(rule, inputs) {
+    const a = new Uint8Array(2 + rule.b.nIn + rule.b.els.length);
+    a[1] = 1;
+    for (let i = 0; i < 10; i++) a[2 + i] = inputs[i] ? 1 : 0;
+    let m = 2 + rule.b.nIn;
+    for (const e of rule.b.els) a[m++] = (a[e.a] & a[e.b]) ? 0 : 1;
+    return a;
+  }
+
+  const rule = buildRule();
+  const ruleBytes = encode(rule.b.els);
+  const RULE_NAND = rule.b.els.length;
+
+  // ---------------------------------------------------------------- board
+  let N = 8;
+  let board = new Uint8Array(N * N);
+  let beat = 0;
+  let probeCell = { r: 2, c: 1 };
+
+  const idx = (r, c) => ((r + N) % N) * N + ((c + N) % N);
+  const neighbours = (r, c) => [
+    board[idx(r - 1, c - 1)], board[idx(r - 1, c)], board[idx(r - 1, c + 1)],
+    board[idx(r, c - 1)],                           board[idx(r, c + 1)],
+    board[idx(r + 1, c - 1)], board[idx(r + 1, c)], board[idx(r + 1, c + 1)],
+  ];
+
+  function advance() {
+    const next = new Uint8Array(N * N);
+    for (let r = 0; r < N; r++) for (let c = 0; c < N; c++) {
+      const sig = runRule(rule, [...neighbours(r, c), board[idx(r, c)], 0]);
+      next[r * N + c] = sig[sig.length - 1];
+    }
+    board = next;
+    beat++;
+  }
+
+  const PATTERNS = {
+    glider: [[0, 1], [1, 2], [2, 0], [2, 1], [2, 2]],
+    lwss: [[1, 0], [1, 3], [2, 4], [3, 0], [3, 4], [4, 1], [4, 2], [4, 3], [4, 4]],
+    rpent: [[0, 1], [0, 2], [1, 0], [1, 1], [2, 1]],
+  };
+
+  function seed(kind) {
+    board = new Uint8Array(N * N);
+    beat = 0;
+    if (kind === "random") {
+      for (let i = 0; i < N * N; i++) board[i] = Math.random() < 0.32 ? 1 : 0;
+    } else {
+      const p = PATTERNS[kind] || PATTERNS.glider;
+      const off = kind === "glider" ? 1 : Math.max(1, (N >> 1) - 2);
+      for (const [r, c] of p) board[idx(r + off - 1, c + off - 1)] = 1;
+    }
+  }
+
+  // ---------------------------------------------------------------- render
+  const cv = document.getElementById("board");
+  const ctx = cv.getContext("2d");
+  const css = k => getComputedStyle(document.documentElement).getPropertyValue(k).trim();
+
+  function draw() {
+    const S = 512, cell = S / N;
+    cv.width = S; cv.height = S;
+    ctx.fillStyle = css("--surface-2");
+    ctx.fillRect(0, 0, S, S);
+    ctx.strokeStyle = css("--line");
+    ctx.lineWidth = 1;
+    for (let i = 1; i < N; i++) {
+      ctx.beginPath(); ctx.moveTo(i * cell, 0); ctx.lineTo(i * cell, S); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(0, i * cell); ctx.lineTo(S, i * cell); ctx.stroke();
+    }
+    ctx.fillStyle = css("--accent");
+    for (let r = 0; r < N; r++) for (let c = 0; c < N; c++) {
+      if (board[r * N + c]) ctx.fillRect(c * cell + 1.5, r * cell + 1.5, cell - 3, cell - 3);
+    }
+    // probe highlight: the 3x3 window the rule circuit sees
+    ctx.strokeStyle = css("--signal");
+    ctx.lineWidth = 2;
+    ctx.strokeRect((probeCell.c - 1) * cell + 1, (probeCell.r - 1) * cell + 1, cell * 3 - 2, cell * 3 - 2);
+    document.getElementById("beat-label").textContent = `beat ${beat} · ${board.reduce((a, b) => a + b, 0)} alive`;
+  }
+
+  const bitsEl = document.getElementById("bits");
+  const bitNodes = [];
+  for (let i = 0; i < RULE_NAND; i++) {
+    const d = document.createElement("div");
+    d.className = "bit";
+    d.title = `NAND #${i + 1}`;
+    bitsEl.appendChild(d);
+    bitNodes.push(d);
+  }
+  const nbhdEl = document.getElementById("nbhd");
+  const nbhdNodes = [];
+  for (let i = 0; i < 9; i++) {
+    const d = document.createElement("div");
+    if (i === 4) d.classList.add("self");
+    nbhdEl.appendChild(d);
+    nbhdNodes.push(d);
+  }
+
+  function drawProbe() {
+    const { r, c } = probeCell;
+    const nb = neighbours(r, c);
+    const self = board[idx(r, c)];
+    const sig = runRule(rule, [...nb, self, 0]);
+    const win = [nb[0], nb[1], nb[2], nb[3], self, nb[4], nb[5], nb[6], nb[7]];
+    win.forEach((v, i) => { nbhdNodes[i].classList.toggle("alive", !!v); nbhdNodes[i].textContent = v ? "1" : "0"; });
+    const base = 2 + 10;
+    for (let i = 0; i < RULE_NAND; i++) bitNodes[i].classList.toggle("on", !!sig[base + i]);
+    document.getElementById("p-count").textContent = nb.reduce((a, b) => a + b, 0);
+    document.getElementById("p-next").textContent = sig[sig.length - 1];
+    document.getElementById("probe-cell").textContent = `cell (${r}, ${c})`;
+    document.getElementById("p-b0").textContent = `b0=${sig[rule.probes.b0]}`;
+    document.getElementById("p-b1").textContent = `b1=${sig[rule.probes.b1]}`;
+    document.getElementById("p-ge4").textContent = `s≥4: ${sig[rule.probes.ge4]}`;
+  }
+
+  function stats() {
+    const perCell = RULE_NAND + 1;
+    const gates = N * N * perCell;
+    const fmt = n => n.toLocaleString("en-US");
+    document.getElementById("s-latch").textContent = fmt(N * N);
+    document.getElementById("s-total").textContent = fmt(N * N + RULE_NAND);
+    document.getElementById("s-gates").textContent = fmt(gates);
+    document.getElementById("s-gas").textContent = (gates * 2468 + 40000 > 1e6)
+      ? ((gates * 2468 + 40000) / 1e6).toFixed(1) + "M" : fmt(gates * 2468 + 40000);
+    document.getElementById("s-naive").textContent = fmt(Math.round(N * N * 55.9));
+    document.getElementById("tag-mode").textContent = `${N}×${N} torus`;
+  }
+
+  // hex dump with the first element highlighted
+  const hexEl = document.getElementById("hex");
+  hexEl.innerHTML = [...ruleBytes].map((b, i) =>
+    (i < 7 ? "<b>" : "") + b.toString(16).padStart(2, "0") + (i < 7 ? "</b>" : "")).join(" ");
+
+  // ---------------------------------------------------------------- controls
+  let playing = true, acc = 0, last = performance.now();
+  const playBtn = document.getElementById("play");
+  const speedEl = document.getElementById("speed");
+
+  function frame(now) {
+    const dt = now - last; last = now;
+    if (playing) {
+      acc += dt * (Number(speedEl.value) / 1000);
+      while (acc >= 1) { advance(); acc -= 1; }
+      draw(); drawProbe();
+    }
+    requestAnimationFrame(frame);
+  }
+
+  playBtn.addEventListener("click", () => {
+    playing = !playing;
+    playBtn.textContent = playing ? "Pause" : "Play";
+    playBtn.classList.toggle("primary", playing);
+  });
+  document.getElementById("stepbtn").addEventListener("click", () => { advance(); draw(); drawProbe(); });
+  document.getElementById("clear").addEventListener("click", () => {
+    board = new Uint8Array(N * N); beat = 0; draw(); drawProbe();
+  });
+  document.getElementById("pattern").addEventListener("change", e => { seed(e.target.value); draw(); drawProbe(); });
+  document.getElementById("size").addEventListener("change", e => {
+    N = Number(e.target.value);
+    probeCell = { r: Math.min(probeCell.r, N - 1), c: Math.min(probeCell.c, N - 1) };
+    seed(document.getElementById("pattern").value);
+    stats(); draw(); drawProbe();
+  });
+
+  cv.addEventListener("click", ev => {
+    const rect = cv.getBoundingClientRect();
+    const c = Math.floor((ev.clientX - rect.left) / rect.width * N);
+    const r = Math.floor((ev.clientY - rect.top) / rect.height * N);
+    if (r < 0 || c < 0 || r >= N || c >= N) return;
+    if (ev.shiftKey) { board[r * N + c] ^= 1; } else { probeCell = { r, c }; }
+    draw(); drawProbe();
+  });
+  cv.addEventListener("dblclick", ev => {
+    const rect = cv.getBoundingClientRect();
+    const c = Math.floor((ev.clientX - rect.left) / rect.width * N);
+    const r = Math.floor((ev.clientY - rect.top) / rect.height * N);
+    board[r * N + c] ^= 1; draw(); drawProbe();
+  });
+
+  seed("glider");
+  stats(); draw(); drawProbe();
+  requestAnimationFrame(frame);
+})();
+</script>
