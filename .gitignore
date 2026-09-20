@@ -2,3 +2,6 @@ sim/
 synth/*.lib
 synth/*.log
 *.vvp
+tapeout_net/scan/data/netlists.json
+tapeout_net/scan/data/*.log
+tapeout_net/scan/node_modules/
