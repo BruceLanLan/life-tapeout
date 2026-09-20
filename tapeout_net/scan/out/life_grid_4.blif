@@ -1,0 +1,1844 @@
+.model life_4x4
+.inputs seed0 seed1 seed2 seed3 seed4 seed5 seed6 seed7 seed8 seed9 seed10 seed11 seed12 seed13 seed14 seed15 clk
+.outputs cell0 cell1 cell2 cell3 cell4 cell5 cell6 cell7 cell8 cell9 cell10 cell11 cell12 cell13 cell14 cell15
+.names q15 q12 g16
+11 0
+.names q15 g16 g17
+11 0
+.names q12 g16 g18
+11 0
+.names g17 g18 g19
+11 0
+.names g19 q13 g20
+11 0
+.names g19 g20 g21
+11 0
+.names q13 g20 g22
+11 0
+.names g21 g22 g23
+11 0
+.names g16 g20 g24
+11 0
+.names q3 q1 g25
+11 0
+.names q3 g25 g26
+11 0
+.names q1 g25 g27
+11 0
+.names g26 g27 g28
+11 0
+.names g28 q7 g29
+11 0
+.names g28 g29 g30
+11 0
+.names q7 g29 g31
+11 0
+.names g30 g31 g32
+11 0
+.names g25 g29 g33
+11 0
+.names q4 q5 g34
+11 0
+.names q4 g34 g35
+11 0
+.names q5 g34 g36
+11 0
+.names g35 g36 g37
+11 0
+.names g34 g34 g38
+11 0
+.names g23 g32 g39
+11 0
+.names g23 g39 g40
+11 0
+.names g32 g39 g41
+11 0
+.names g40 g41 g42
+11 0
+.names g42 g37 g43
+11 0
+.names g42 g43 g44
+11 0
+.names g37 g43 g45
+11 0
+.names g44 g45 g46
+11 0
+.names g39 g43 g47
+11 0
+.names g24 g33 g48
+11 0
+.names g24 g48 g49
+11 0
+.names g33 g48 g50
+11 0
+.names g49 g50 g51
+11 0
+.names g51 g38 g52
+11 0
+.names g51 g52 g53
+11 0
+.names g38 g52 g54
+11 0
+.names g53 g54 g55
+11 0
+.names g48 g52 g56
+11 0
+.names g55 g47 g57
+11 0
+.names g55 g57 g58
+11 0
+.names g47 g57 g59
+11 0
+.names g58 g59 g60
+11 0
+.names g56 g56 g61
+11 0
+.names g61 g57 g62
+11 0
+.names g46 g46 g63
+11 0
+.names q0 q0 g64
+11 0
+.names g63 g64 g65
+11 0
+.names g60 g65 g66
+11 0
+.names g66 g66 g67
+11 0
+.names g62 g62 g68
+11 0
+.names g67 g68 g69
+11 0
+.names seed0 seed0 g70
+11 0
+.names g69 g70 g71
+11 0
+.names q12 q13 g72
+11 0
+.names q12 g72 g73
+11 0
+.names q13 g72 g74
+11 0
+.names g73 g74 g75
+11 0
+.names g75 q14 g76
+11 0
+.names g75 g76 g77
+11 0
+.names q14 g76 g78
+11 0
+.names g77 g78 g79
+11 0
+.names g72 g76 g80
+11 0
+.names q0 q2 g81
+11 0
+.names q0 g81 g82
+11 0
+.names q2 g81 g83
+11 0
+.names g82 g83 g84
+11 0
+.names g84 q4 g85
+11 0
+.names g84 g85 g86
+11 0
+.names q4 g85 g87
+11 0
+.names g86 g87 g88
+11 0
+.names g81 g85 g89
+11 0
+.names q5 q6 g90
+11 0
+.names q5 g90 g91
+11 0
+.names q6 g90 g92
+11 0
+.names g91 g92 g93
+11 0
+.names g90 g90 g94
+11 0
+.names g79 g88 g95
+11 0
+.names g79 g95 g96
+11 0
+.names g88 g95 g97
+11 0
+.names g96 g97 g98
+11 0
+.names g98 g93 g99
+11 0
+.names g98 g99 g100
+11 0
+.names g93 g99 g101
+11 0
+.names g100 g101 g102
+11 0
+.names g95 g99 g103
+11 0
+.names g80 g89 g104
+11 0
+.names g80 g104 g105
+11 0
+.names g89 g104 g106
+11 0
+.names g105 g106 g107
+11 0
+.names g107 g94 g108
+11 0
+.names g107 g108 g109
+11 0
+.names g94 g108 g110
+11 0
+.names g109 g110 g111
+11 0
+.names g104 g108 g112
+11 0
+.names g111 g103 g113
+11 0
+.names g111 g113 g114
+11 0
+.names g103 g113 g115
+11 0
+.names g114 g115 g116
+11 0
+.names g112 g112 g117
+11 0
+.names g117 g113 g118
+11 0
+.names g102 g102 g119
+11 0
+.names q1 q1 g120
+11 0
+.names g119 g120 g121
+11 0
+.names g116 g121 g122
+11 0
+.names g122 g122 g123
+11 0
+.names g118 g118 g124
+11 0
+.names g123 g124 g125
+11 0
+.names seed1 seed1 g126
+11 0
+.names g125 g126 g127
+11 0
+.names q13 q14 g128
+11 0
+.names q13 g128 g129
+11 0
+.names q14 g128 g130
+11 0
+.names g129 g130 g131
+11 0
+.names g131 q15 g132
+11 0
+.names g131 g132 g133
+11 0
+.names q15 g132 g134
+11 0
+.names g133 g134 g135
+11 0
+.names g128 g132 g136
+11 0
+.names q1 q3 g137
+11 0
+.names q1 g137 g138
+11 0
+.names q3 g137 g139
+11 0
+.names g138 g139 g140
+11 0
+.names g140 q5 g141
+11 0
+.names g140 g141 g142
+11 0
+.names q5 g141 g143
+11 0
+.names g142 g143 g144
+11 0
+.names g137 g141 g145
+11 0
+.names q6 q7 g146
+11 0
+.names q6 g146 g147
+11 0
+.names q7 g146 g148
+11 0
+.names g147 g148 g149
+11 0
+.names g146 g146 g150
+11 0
+.names g135 g144 g151
+11 0
+.names g135 g151 g152
+11 0
+.names g144 g151 g153
+11 0
+.names g152 g153 g154
+11 0
+.names g154 g149 g155
+11 0
+.names g154 g155 g156
+11 0
+.names g149 g155 g157
+11 0
+.names g156 g157 g158
+11 0
+.names g151 g155 g159
+11 0
+.names g136 g145 g160
+11 0
+.names g136 g160 g161
+11 0
+.names g145 g160 g162
+11 0
+.names g161 g162 g163
+11 0
+.names g163 g150 g164
+11 0
+.names g163 g164 g165
+11 0
+.names g150 g164 g166
+11 0
+.names g165 g166 g167
+11 0
+.names g160 g164 g168
+11 0
+.names g167 g159 g169
+11 0
+.names g167 g169 g170
+11 0
+.names g159 g169 g171
+11 0
+.names g170 g171 g172
+11 0
+.names g168 g168 g173
+11 0
+.names g173 g169 g174
+11 0
+.names g158 g158 g175
+11 0
+.names q2 q2 g176
+11 0
+.names g175 g176 g177
+11 0
+.names g172 g177 g178
+11 0
+.names g178 g178 g179
+11 0
+.names g174 g174 g180
+11 0
+.names g179 g180 g181
+11 0
+.names seed2 seed2 g182
+11 0
+.names g181 g182 g183
+11 0
+.names q14 q15 g184
+11 0
+.names q14 g184 g185
+11 0
+.names q15 g184 g186
+11 0
+.names g185 g186 g187
+11 0
+.names g187 q12 g188
+11 0
+.names g187 g188 g189
+11 0
+.names q12 g188 g190
+11 0
+.names g189 g190 g191
+11 0
+.names g184 g188 g192
+11 0
+.names q2 q0 g193
+11 0
+.names q2 g193 g194
+11 0
+.names q0 g193 g195
+11 0
+.names g194 g195 g196
+11 0
+.names g196 q6 g197
+11 0
+.names g196 g197 g198
+11 0
+.names q6 g197 g199
+11 0
+.names g198 g199 g200
+11 0
+.names g193 g197 g201
+11 0
+.names q7 q4 g202
+11 0
+.names q7 g202 g203
+11 0
+.names q4 g202 g204
+11 0
+.names g203 g204 g205
+11 0
+.names g202 g202 g206
+11 0
+.names g191 g200 g207
+11 0
+.names g191 g207 g208
+11 0
+.names g200 g207 g209
+11 0
+.names g208 g209 g210
+11 0
+.names g210 g205 g211
+11 0
+.names g210 g211 g212
+11 0
+.names g205 g211 g213
+11 0
+.names g212 g213 g214
+11 0
+.names g207 g211 g215
+11 0
+.names g192 g201 g216
+11 0
+.names g192 g216 g217
+11 0
+.names g201 g216 g218
+11 0
+.names g217 g218 g219
+11 0
+.names g219 g206 g220
+11 0
+.names g219 g220 g221
+11 0
+.names g206 g220 g222
+11 0
+.names g221 g222 g223
+11 0
+.names g216 g220 g224
+11 0
+.names g223 g215 g225
+11 0
+.names g223 g225 g226
+11 0
+.names g215 g225 g227
+11 0
+.names g226 g227 g228
+11 0
+.names g224 g224 g229
+11 0
+.names g229 g225 g230
+11 0
+.names g214 g214 g231
+11 0
+.names q3 q3 g232
+11 0
+.names g231 g232 g233
+11 0
+.names g228 g233 g234
+11 0
+.names g234 g234 g235
+11 0
+.names g230 g230 g236
+11 0
+.names g235 g236 g237
+11 0
+.names seed3 seed3 g238
+11 0
+.names g237 g238 g239
+11 0
+.names q3 q0 g240
+11 0
+.names q3 g240 g241
+11 0
+.names q0 g240 g242
+11 0
+.names g241 g242 g243
+11 0
+.names g243 q1 g244
+11 0
+.names g243 g244 g245
+11 0
+.names q1 g244 g246
+11 0
+.names g245 g246 g247
+11 0
+.names g240 g244 g248
+11 0
+.names q7 q5 g249
+11 0
+.names q7 g249 g250
+11 0
+.names q5 g249 g251
+11 0
+.names g250 g251 g252
+11 0
+.names g252 q11 g253
+11 0
+.names g252 g253 g254
+11 0
+.names q11 g253 g255
+11 0
+.names g254 g255 g256
+11 0
+.names g249 g253 g257
+11 0
+.names q8 q9 g258
+11 0
+.names q8 g258 g259
+11 0
+.names q9 g258 g260
+11 0
+.names g259 g260 g261
+11 0
+.names g258 g258 g262
+11 0
+.names g247 g256 g263
+11 0
+.names g247 g263 g264
+11 0
+.names g256 g263 g265
+11 0
+.names g264 g265 g266
+11 0
+.names g266 g261 g267
+11 0
+.names g266 g267 g268
+11 0
+.names g261 g267 g269
+11 0
+.names g268 g269 g270
+11 0
+.names g263 g267 g271
+11 0
+.names g248 g257 g272
+11 0
+.names g248 g272 g273
+11 0
+.names g257 g272 g274
+11 0
+.names g273 g274 g275
+11 0
+.names g275 g262 g276
+11 0
+.names g275 g276 g277
+11 0
+.names g262 g276 g278
+11 0
+.names g277 g278 g279
+11 0
+.names g272 g276 g280
+11 0
+.names g279 g271 g281
+11 0
+.names g279 g281 g282
+11 0
+.names g271 g281 g283
+11 0
+.names g282 g283 g284
+11 0
+.names g280 g280 g285
+11 0
+.names g285 g281 g286
+11 0
+.names g270 g270 g287
+11 0
+.names q4 q4 g288
+11 0
+.names g287 g288 g289
+11 0
+.names g284 g289 g290
+11 0
+.names g290 g290 g291
+11 0
+.names g286 g286 g292
+11 0
+.names g291 g292 g293
+11 0
+.names seed4 seed4 g294
+11 0
+.names g293 g294 g295
+11 0
+.names q0 q1 g296
+11 0
+.names q0 g296 g297
+11 0
+.names q1 g296 g298
+11 0
+.names g297 g298 g299
+11 0
+.names g299 q2 g300
+11 0
+.names g299 g300 g301
+11 0
+.names q2 g300 g302
+11 0
+.names g301 g302 g303
+11 0
+.names g296 g300 g304
+11 0
+.names q4 q6 g305
+11 0
+.names q4 g305 g306
+11 0
+.names q6 g305 g307
+11 0
+.names g306 g307 g308
+11 0
+.names g308 q8 g309
+11 0
+.names g308 g309 g310
+11 0
+.names q8 g309 g311
+11 0
+.names g310 g311 g312
+11 0
+.names g305 g309 g313
+11 0
+.names q9 q10 g314
+11 0
+.names q9 g314 g315
+11 0
+.names q10 g314 g316
+11 0
+.names g315 g316 g317
+11 0
+.names g314 g314 g318
+11 0
+.names g303 g312 g319
+11 0
+.names g303 g319 g320
+11 0
+.names g312 g319 g321
+11 0
+.names g320 g321 g322
+11 0
+.names g322 g317 g323
+11 0
+.names g322 g323 g324
+11 0
+.names g317 g323 g325
+11 0
+.names g324 g325 g326
+11 0
+.names g319 g323 g327
+11 0
+.names g304 g313 g328
+11 0
+.names g304 g328 g329
+11 0
+.names g313 g328 g330
+11 0
+.names g329 g330 g331
+11 0
+.names g331 g318 g332
+11 0
+.names g331 g332 g333
+11 0
+.names g318 g332 g334
+11 0
+.names g333 g334 g335
+11 0
+.names g328 g332 g336
+11 0
+.names g335 g327 g337
+11 0
+.names g335 g337 g338
+11 0
+.names g327 g337 g339
+11 0
+.names g338 g339 g340
+11 0
+.names g336 g336 g341
+11 0
+.names g341 g337 g342
+11 0
+.names g326 g326 g343
+11 0
+.names q5 q5 g344
+11 0
+.names g343 g344 g345
+11 0
+.names g340 g345 g346
+11 0
+.names g346 g346 g347
+11 0
+.names g342 g342 g348
+11 0
+.names g347 g348 g349
+11 0
+.names seed5 seed5 g350
+11 0
+.names g349 g350 g351
+11 0
+.names q1 q2 g352
+11 0
+.names q1 g352 g353
+11 0
+.names q2 g352 g354
+11 0
+.names g353 g354 g355
+11 0
+.names g355 q3 g356
+11 0
+.names g355 g356 g357
+11 0
+.names q3 g356 g358
+11 0
+.names g357 g358 g359
+11 0
+.names g352 g356 g360
+11 0
+.names q5 q7 g361
+11 0
+.names q5 g361 g362
+11 0
+.names q7 g361 g363
+11 0
+.names g362 g363 g364
+11 0
+.names g364 q9 g365
+11 0
+.names g364 g365 g366
+11 0
+.names q9 g365 g367
+11 0
+.names g366 g367 g368
+11 0
+.names g361 g365 g369
+11 0
+.names q10 q11 g370
+11 0
+.names q10 g370 g371
+11 0
+.names q11 g370 g372
+11 0
+.names g371 g372 g373
+11 0
+.names g370 g370 g374
+11 0
+.names g359 g368 g375
+11 0
+.names g359 g375 g376
+11 0
+.names g368 g375 g377
+11 0
+.names g376 g377 g378
+11 0
+.names g378 g373 g379
+11 0
+.names g378 g379 g380
+11 0
+.names g373 g379 g381
+11 0
+.names g380 g381 g382
+11 0
+.names g375 g379 g383
+11 0
+.names g360 g369 g384
+11 0
+.names g360 g384 g385
+11 0
+.names g369 g384 g386
+11 0
+.names g385 g386 g387
+11 0
+.names g387 g374 g388
+11 0
+.names g387 g388 g389
+11 0
+.names g374 g388 g390
+11 0
+.names g389 g390 g391
+11 0
+.names g384 g388 g392
+11 0
+.names g391 g383 g393
+11 0
+.names g391 g393 g394
+11 0
+.names g383 g393 g395
+11 0
+.names g394 g395 g396
+11 0
+.names g392 g392 g397
+11 0
+.names g397 g393 g398
+11 0
+.names g382 g382 g399
+11 0
+.names q6 q6 g400
+11 0
+.names g399 g400 g401
+11 0
+.names g396 g401 g402
+11 0
+.names g402 g402 g403
+11 0
+.names g398 g398 g404
+11 0
+.names g403 g404 g405
+11 0
+.names seed6 seed6 g406
+11 0
+.names g405 g406 g407
+11 0
+.names q2 q3 g408
+11 0
+.names q2 g408 g409
+11 0
+.names q3 g408 g410
+11 0
+.names g409 g410 g411
+11 0
+.names g411 q0 g412
+11 0
+.names g411 g412 g413
+11 0
+.names q0 g412 g414
+11 0
+.names g413 g414 g415
+11 0
+.names g408 g412 g416
+11 0
+.names q6 q4 g417
+11 0
+.names q6 g417 g418
+11 0
+.names q4 g417 g419
+11 0
+.names g418 g419 g420
+11 0
+.names g420 q10 g421
+11 0
+.names g420 g421 g422
+11 0
+.names q10 g421 g423
+11 0
+.names g422 g423 g424
+11 0
+.names g417 g421 g425
+11 0
+.names q11 q8 g426
+11 0
+.names q11 g426 g427
+11 0
+.names q8 g426 g428
+11 0
+.names g427 g428 g429
+11 0
+.names g426 g426 g430
+11 0
+.names g415 g424 g431
+11 0
+.names g415 g431 g432
+11 0
+.names g424 g431 g433
+11 0
+.names g432 g433 g434
+11 0
+.names g434 g429 g435
+11 0
+.names g434 g435 g436
+11 0
+.names g429 g435 g437
+11 0
+.names g436 g437 g438
+11 0
+.names g431 g435 g439
+11 0
+.names g416 g425 g440
+11 0
+.names g416 g440 g441
+11 0
+.names g425 g440 g442
+11 0
+.names g441 g442 g443
+11 0
+.names g443 g430 g444
+11 0
+.names g443 g444 g445
+11 0
+.names g430 g444 g446
+11 0
+.names g445 g446 g447
+11 0
+.names g440 g444 g448
+11 0
+.names g447 g439 g449
+11 0
+.names g447 g449 g450
+11 0
+.names g439 g449 g451
+11 0
+.names g450 g451 g452
+11 0
+.names g448 g448 g453
+11 0
+.names g453 g449 g454
+11 0
+.names g438 g438 g455
+11 0
+.names q7 q7 g456
+11 0
+.names g455 g456 g457
+11 0
+.names g452 g457 g458
+11 0
+.names g458 g458 g459
+11 0
+.names g454 g454 g460
+11 0
+.names g459 g460 g461
+11 0
+.names seed7 seed7 g462
+11 0
+.names g461 g462 g463
+11 0
+.names q7 q4 g464
+11 0
+.names q7 g464 g465
+11 0
+.names q4 g464 g466
+11 0
+.names g465 g466 g467
+11 0
+.names g467 q5 g468
+11 0
+.names g467 g468 g469
+11 0
+.names q5 g468 g470
+11 0
+.names g469 g470 g471
+11 0
+.names g464 g468 g472
+11 0
+.names q11 q9 g473
+11 0
+.names q11 g473 g474
+11 0
+.names q9 g473 g475
+11 0
+.names g474 g475 g476
+11 0
+.names g476 q15 g477
+11 0
+.names g476 g477 g478
+11 0
+.names q15 g477 g479
+11 0
+.names g478 g479 g480
+11 0
+.names g473 g477 g481
+11 0
+.names q12 q13 g482
+11 0
+.names q12 g482 g483
+11 0
+.names q13 g482 g484
+11 0
+.names g483 g484 g485
+11 0
+.names g482 g482 g486
+11 0
+.names g471 g480 g487
+11 0
+.names g471 g487 g488
+11 0
+.names g480 g487 g489
+11 0
+.names g488 g489 g490
+11 0
+.names g490 g485 g491
+11 0
+.names g490 g491 g492
+11 0
+.names g485 g491 g493
+11 0
+.names g492 g493 g494
+11 0
+.names g487 g491 g495
+11 0
+.names g472 g481 g496
+11 0
+.names g472 g496 g497
+11 0
+.names g481 g496 g498
+11 0
+.names g497 g498 g499
+11 0
+.names g499 g486 g500
+11 0
+.names g499 g500 g501
+11 0
+.names g486 g500 g502
+11 0
+.names g501 g502 g503
+11 0
+.names g496 g500 g504
+11 0
+.names g503 g495 g505
+11 0
+.names g503 g505 g506
+11 0
+.names g495 g505 g507
+11 0
+.names g506 g507 g508
+11 0
+.names g504 g504 g509
+11 0
+.names g509 g505 g510
+11 0
+.names g494 g494 g511
+11 0
+.names q8 q8 g512
+11 0
+.names g511 g512 g513
+11 0
+.names g508 g513 g514
+11 0
+.names g514 g514 g515
+11 0
+.names g510 g510 g516
+11 0
+.names g515 g516 g517
+11 0
+.names seed8 seed8 g518
+11 0
+.names g517 g518 g519
+11 0
+.names q4 q5 g520
+11 0
+.names q4 g520 g521
+11 0
+.names q5 g520 g522
+11 0
+.names g521 g522 g523
+11 0
+.names g523 q6 g524
+11 0
+.names g523 g524 g525
+11 0
+.names q6 g524 g526
+11 0
+.names g525 g526 g527
+11 0
+.names g520 g524 g528
+11 0
+.names q8 q10 g529
+11 0
+.names q8 g529 g530
+11 0
+.names q10 g529 g531
+11 0
+.names g530 g531 g532
+11 0
+.names g532 q12 g533
+11 0
+.names g532 g533 g534
+11 0
+.names q12 g533 g535
+11 0
+.names g534 g535 g536
+11 0
+.names g529 g533 g537
+11 0
+.names q13 q14 g538
+11 0
+.names q13 g538 g539
+11 0
+.names q14 g538 g540
+11 0
+.names g539 g540 g541
+11 0
+.names g538 g538 g542
+11 0
+.names g527 g536 g543
+11 0
+.names g527 g543 g544
+11 0
+.names g536 g543 g545
+11 0
+.names g544 g545 g546
+11 0
+.names g546 g541 g547
+11 0
+.names g546 g547 g548
+11 0
+.names g541 g547 g549
+11 0
+.names g548 g549 g550
+11 0
+.names g543 g547 g551
+11 0
+.names g528 g537 g552
+11 0
+.names g528 g552 g553
+11 0
+.names g537 g552 g554
+11 0
+.names g553 g554 g555
+11 0
+.names g555 g542 g556
+11 0
+.names g555 g556 g557
+11 0
+.names g542 g556 g558
+11 0
+.names g557 g558 g559
+11 0
+.names g552 g556 g560
+11 0
+.names g559 g551 g561
+11 0
+.names g559 g561 g562
+11 0
+.names g551 g561 g563
+11 0
+.names g562 g563 g564
+11 0
+.names g560 g560 g565
+11 0
+.names g565 g561 g566
+11 0
+.names g550 g550 g567
+11 0
+.names q9 q9 g568
+11 0
+.names g567 g568 g569
+11 0
+.names g564 g569 g570
+11 0
+.names g570 g570 g571
+11 0
+.names g566 g566 g572
+11 0
+.names g571 g572 g573
+11 0
+.names seed9 seed9 g574
+11 0
+.names g573 g574 g575
+11 0
+.names q5 q6 g576
+11 0
+.names q5 g576 g577
+11 0
+.names q6 g576 g578
+11 0
+.names g577 g578 g579
+11 0
+.names g579 q7 g580
+11 0
+.names g579 g580 g581
+11 0
+.names q7 g580 g582
+11 0
+.names g581 g582 g583
+11 0
+.names g576 g580 g584
+11 0
+.names q9 q11 g585
+11 0
+.names q9 g585 g586
+11 0
+.names q11 g585 g587
+11 0
+.names g586 g587 g588
+11 0
+.names g588 q13 g589
+11 0
+.names g588 g589 g590
+11 0
+.names q13 g589 g591
+11 0
+.names g590 g591 g592
+11 0
+.names g585 g589 g593
+11 0
+.names q14 q15 g594
+11 0
+.names q14 g594 g595
+11 0
+.names q15 g594 g596
+11 0
+.names g595 g596 g597
+11 0
+.names g594 g594 g598
+11 0
+.names g583 g592 g599
+11 0
+.names g583 g599 g600
+11 0
+.names g592 g599 g601
+11 0
+.names g600 g601 g602
+11 0
+.names g602 g597 g603
+11 0
+.names g602 g603 g604
+11 0
+.names g597 g603 g605
+11 0
+.names g604 g605 g606
+11 0
+.names g599 g603 g607
+11 0
+.names g584 g593 g608
+11 0
+.names g584 g608 g609
+11 0
+.names g593 g608 g610
+11 0
+.names g609 g610 g611
+11 0
+.names g611 g598 g612
+11 0
+.names g611 g612 g613
+11 0
+.names g598 g612 g614
+11 0
+.names g613 g614 g615
+11 0
+.names g608 g612 g616
+11 0
+.names g615 g607 g617
+11 0
+.names g615 g617 g618
+11 0
+.names g607 g617 g619
+11 0
+.names g618 g619 g620
+11 0
+.names g616 g616 g621
+11 0
+.names g621 g617 g622
+11 0
+.names g606 g606 g623
+11 0
+.names q10 q10 g624
+11 0
+.names g623 g624 g625
+11 0
+.names g620 g625 g626
+11 0
+.names g626 g626 g627
+11 0
+.names g622 g622 g628
+11 0
+.names g627 g628 g629
+11 0
+.names seed10 seed10 g630
+11 0
+.names g629 g630 g631
+11 0
+.names q6 q7 g632
+11 0
+.names q6 g632 g633
+11 0
+.names q7 g632 g634
+11 0
+.names g633 g634 g635
+11 0
+.names g635 q4 g636
+11 0
+.names g635 g636 g637
+11 0
+.names q4 g636 g638
+11 0
+.names g637 g638 g639
+11 0
+.names g632 g636 g640
+11 0
+.names q10 q8 g641
+11 0
+.names q10 g641 g642
+11 0
+.names q8 g641 g643
+11 0
+.names g642 g643 g644
+11 0
+.names g644 q14 g645
+11 0
+.names g644 g645 g646
+11 0
+.names q14 g645 g647
+11 0
+.names g646 g647 g648
+11 0
+.names g641 g645 g649
+11 0
+.names q15 q12 g650
+11 0
+.names q15 g650 g651
+11 0
+.names q12 g650 g652
+11 0
+.names g651 g652 g653
+11 0
+.names g650 g650 g654
+11 0
+.names g639 g648 g655
+11 0
+.names g639 g655 g656
+11 0
+.names g648 g655 g657
+11 0
+.names g656 g657 g658
+11 0
+.names g658 g653 g659
+11 0
+.names g658 g659 g660
+11 0
+.names g653 g659 g661
+11 0
+.names g660 g661 g662
+11 0
+.names g655 g659 g663
+11 0
+.names g640 g649 g664
+11 0
+.names g640 g664 g665
+11 0
+.names g649 g664 g666
+11 0
+.names g665 g666 g667
+11 0
+.names g667 g654 g668
+11 0
+.names g667 g668 g669
+11 0
+.names g654 g668 g670
+11 0
+.names g669 g670 g671
+11 0
+.names g664 g668 g672
+11 0
+.names g671 g663 g673
+11 0
+.names g671 g673 g674
+11 0
+.names g663 g673 g675
+11 0
+.names g674 g675 g676
+11 0
+.names g672 g672 g677
+11 0
+.names g677 g673 g678
+11 0
+.names g662 g662 g679
+11 0
+.names q11 q11 g680
+11 0
+.names g679 g680 g681
+11 0
+.names g676 g681 g682
+11 0
+.names g682 g682 g683
+11 0
+.names g678 g678 g684
+11 0
+.names g683 g684 g685
+11 0
+.names seed11 seed11 g686
+11 0
+.names g685 g686 g687
+11 0
+.names q11 q8 g688
+11 0
+.names q11 g688 g689
+11 0
+.names q8 g688 g690
+11 0
+.names g689 g690 g691
+11 0
+.names g691 q9 g692
+11 0
+.names g691 g692 g693
+11 0
+.names q9 g692 g694
+11 0
+.names g693 g694 g695
+11 0
+.names g688 g692 g696
+11 0
+.names q15 q13 g697
+11 0
+.names q15 g697 g698
+11 0
+.names q13 g697 g699
+11 0
+.names g698 g699 g700
+11 0
+.names g700 q3 g701
+11 0
+.names g700 g701 g702
+11 0
+.names q3 g701 g703
+11 0
+.names g702 g703 g704
+11 0
+.names g697 g701 g705
+11 0
+.names q0 q1 g706
+11 0
+.names q0 g706 g707
+11 0
+.names q1 g706 g708
+11 0
+.names g707 g708 g709
+11 0
+.names g706 g706 g710
+11 0
+.names g695 g704 g711
+11 0
+.names g695 g711 g712
+11 0
+.names g704 g711 g713
+11 0
+.names g712 g713 g714
+11 0
+.names g714 g709 g715
+11 0
+.names g714 g715 g716
+11 0
+.names g709 g715 g717
+11 0
+.names g716 g717 g718
+11 0
+.names g711 g715 g719
+11 0
+.names g696 g705 g720
+11 0
+.names g696 g720 g721
+11 0
+.names g705 g720 g722
+11 0
+.names g721 g722 g723
+11 0
+.names g723 g710 g724
+11 0
+.names g723 g724 g725
+11 0
+.names g710 g724 g726
+11 0
+.names g725 g726 g727
+11 0
+.names g720 g724 g728
+11 0
+.names g727 g719 g729
+11 0
+.names g727 g729 g730
+11 0
+.names g719 g729 g731
+11 0
+.names g730 g731 g732
+11 0
+.names g728 g728 g733
+11 0
+.names g733 g729 g734
+11 0
+.names g718 g718 g735
+11 0
+.names q12 q12 g736
+11 0
+.names g735 g736 g737
+11 0
+.names g732 g737 g738
+11 0
+.names g738 g738 g739
+11 0
+.names g734 g734 g740
+11 0
+.names g739 g740 g741
+11 0
+.names seed12 seed12 g742
+11 0
+.names g741 g742 g743
+11 0
+.names q8 q9 g744
+11 0
+.names q8 g744 g745
+11 0
+.names q9 g744 g746
+11 0
+.names g745 g746 g747
+11 0
+.names g747 q10 g748
+11 0
+.names g747 g748 g749
+11 0
+.names q10 g748 g750
+11 0
+.names g749 g750 g751
+11 0
+.names g744 g748 g752
+11 0
+.names q12 q14 g753
+11 0
+.names q12 g753 g754
+11 0
+.names q14 g753 g755
+11 0
+.names g754 g755 g756
+11 0
+.names g756 q0 g757
+11 0
+.names g756 g757 g758
+11 0
+.names q0 g757 g759
+11 0
+.names g758 g759 g760
+11 0
+.names g753 g757 g761
+11 0
+.names q1 q2 g762
+11 0
+.names q1 g762 g763
+11 0
+.names q2 g762 g764
+11 0
+.names g763 g764 g765
+11 0
+.names g762 g762 g766
+11 0
+.names g751 g760 g767
+11 0
+.names g751 g767 g768
+11 0
+.names g760 g767 g769
+11 0
+.names g768 g769 g770
+11 0
+.names g770 g765 g771
+11 0
+.names g770 g771 g772
+11 0
+.names g765 g771 g773
+11 0
+.names g772 g773 g774
+11 0
+.names g767 g771 g775
+11 0
+.names g752 g761 g776
+11 0
+.names g752 g776 g777
+11 0
+.names g761 g776 g778
+11 0
+.names g777 g778 g779
+11 0
+.names g779 g766 g780
+11 0
+.names g779 g780 g781
+11 0
+.names g766 g780 g782
+11 0
+.names g781 g782 g783
+11 0
+.names g776 g780 g784
+11 0
+.names g783 g775 g785
+11 0
+.names g783 g785 g786
+11 0
+.names g775 g785 g787
+11 0
+.names g786 g787 g788
+11 0
+.names g784 g784 g789
+11 0
+.names g789 g785 g790
+11 0
+.names g774 g774 g791
+11 0
+.names q13 q13 g792
+11 0
+.names g791 g792 g793
+11 0
+.names g788 g793 g794
+11 0
+.names g794 g794 g795
+11 0
+.names g790 g790 g796
+11 0
+.names g795 g796 g797
+11 0
+.names seed13 seed13 g798
+11 0
+.names g797 g798 g799
+11 0
+.names q9 q10 g800
+11 0
+.names q9 g800 g801
+11 0
+.names q10 g800 g802
+11 0
+.names g801 g802 g803
+11 0
+.names g803 q11 g804
+11 0
+.names g803 g804 g805
+11 0
+.names q11 g804 g806
+11 0
+.names g805 g806 g807
+11 0
+.names g800 g804 g808
+11 0
+.names q13 q15 g809
+11 0
+.names q13 g809 g810
+11 0
+.names q15 g809 g811
+11 0
+.names g810 g811 g812
+11 0
+.names g812 q1 g813
+11 0
+.names g812 g813 g814
+11 0
+.names q1 g813 g815
+11 0
+.names g814 g815 g816
+11 0
+.names g809 g813 g817
+11 0
+.names q2 q3 g818
+11 0
+.names q2 g818 g819
+11 0
+.names q3 g818 g820
+11 0
+.names g819 g820 g821
+11 0
+.names g818 g818 g822
+11 0
+.names g807 g816 g823
+11 0
+.names g807 g823 g824
+11 0
+.names g816 g823 g825
+11 0
+.names g824 g825 g826
+11 0
+.names g826 g821 g827
+11 0
+.names g826 g827 g828
+11 0
+.names g821 g827 g829
+11 0
+.names g828 g829 g830
+11 0
+.names g823 g827 g831
+11 0
+.names g808 g817 g832
+11 0
+.names g808 g832 g833
+11 0
+.names g817 g832 g834
+11 0
+.names g833 g834 g835
+11 0
+.names g835 g822 g836
+11 0
+.names g835 g836 g837
+11 0
+.names g822 g836 g838
+11 0
+.names g837 g838 g839
+11 0
+.names g832 g836 g840
+11 0
+.names g839 g831 g841
+11 0
+.names g839 g841 g842
+11 0
+.names g831 g841 g843
+11 0
+.names g842 g843 g844
+11 0
+.names g840 g840 g845
+11 0
+.names g845 g841 g846
+11 0
+.names g830 g830 g847
+11 0
+.names q14 q14 g848
+11 0
+.names g847 g848 g849
+11 0
+.names g844 g849 g850
+11 0
+.names g850 g850 g851
+11 0
+.names g846 g846 g852
+11 0
+.names g851 g852 g853
+11 0
+.names seed14 seed14 g854
+11 0
+.names g853 g854 g855
+11 0
+.names q10 q11 g856
+11 0
+.names q10 g856 g857
+11 0
+.names q11 g856 g858
+11 0
+.names g857 g858 g859
+11 0
+.names g859 q8 g860
+11 0
+.names g859 g860 g861
+11 0
+.names q8 g860 g862
+11 0
+.names g861 g862 g863
+11 0
+.names g856 g860 g864
+11 0
+.names q14 q12 g865
+11 0
+.names q14 g865 g866
+11 0
+.names q12 g865 g867
+11 0
+.names g866 g867 g868
+11 0
+.names g868 q2 g869
+11 0
+.names g868 g869 g870
+11 0
+.names q2 g869 g871
+11 0
+.names g870 g871 g872
+11 0
+.names g865 g869 g873
+11 0
+.names q3 q0 g874
+11 0
+.names q3 g874 g875
+11 0
+.names q0 g874 g876
+11 0
+.names g875 g876 g877
+11 0
+.names g874 g874 g878
+11 0
+.names g863 g872 g879
+11 0
+.names g863 g879 g880
+11 0
+.names g872 g879 g881
+11 0
+.names g880 g881 g882
+11 0
+.names g882 g877 g883
+11 0
+.names g882 g883 g884
+11 0
+.names g877 g883 g885
+11 0
+.names g884 g885 g886
+11 0
+.names g879 g883 g887
+11 0
+.names g864 g873 g888
+11 0
+.names g864 g888 g889
+11 0
+.names g873 g888 g890
+11 0
+.names g889 g890 g891
+11 0
+.names g891 g878 g892
+11 0
+.names g891 g892 g893
+11 0
+.names g878 g892 g894
+11 0
+.names g893 g894 g895
+11 0
+.names g888 g892 g896
+11 0
+.names g895 g887 g897
+11 0
+.names g895 g897 g898
+11 0
+.names g887 g897 g899
+11 0
+.names g898 g899 g900
+11 0
+.names g896 g896 g901
+11 0
+.names g901 g897 g902
+11 0
+.names g886 g886 g903
+11 0
+.names q15 q15 g904
+11 0
+.names g903 g904 g905
+11 0
+.names g900 g905 g906
+11 0
+.names g906 g906 g907
+11 0
+.names g902 g902 g908
+11 0
+.names g907 g908 g909
+11 0
+.names seed15 seed15 g910
+11 0
+.names g909 g910 g911
+11 0
+.latch g71 q0 re clk 0
+.latch g127 q1 re clk 0
+.latch g183 q2 re clk 0
+.latch g239 q3 re clk 0
+.latch g295 q4 re clk 0
+.latch g351 q5 re clk 0
+.latch g407 q6 re clk 0
+.latch g463 q7 re clk 0
+.latch g519 q8 re clk 0
+.latch g575 q9 re clk 0
+.latch g631 q10 re clk 0
+.latch g687 q11 re clk 0
+.latch g743 q12 re clk 0
+.latch g799 q13 re clk 0
+.latch g855 q14 re clk 0
+.latch g911 q15 re clk 0
+.names g71 cell0
+1 1
+.names g127 cell1
+1 1
+.names g183 cell2
+1 1
+.names g239 cell3
+1 1
+.names g295 cell4
+1 1
+.names g351 cell5
+1 1
+.names g407 cell6
+1 1
+.names g463 cell7
+1 1
+.names g519 cell8
+1 1
+.names g575 cell9
+1 1
+.names g631 cell10
+1 1
+.names g687 cell11
+1 1
+.names g743 cell12
+1 1
+.names g799 cell13
+1 1
+.names g855 cell14
+1 1
+.names g911 cell15
+1 1
+.end

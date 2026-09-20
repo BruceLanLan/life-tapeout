@@ -167,6 +167,19 @@ node make_calldata.mjs 8 <项目的Circuits地址> <规则电路id>   # 规则�
 - 读链上的 `TAPEOUT_FEE()`（实测 0.0002 BNB）和项目已有电路数；
 - **用 `eth_call` 空跑一次 tapeout**：从一个没有 token 的地址发，结果 revert 在 `ERC1155InsufficientBalance`（OpenZeppelin 的自定义错误 `0x03dee4c5`）。这说明 selector、偏移量、长度字段全部正确，调用一路走到了销毁 token 那一步，只差 token。
 
+### 走官网画布还是走 calldata？
+
+[scan/blif.mjs](scan/blif.mjs) 把规则电路导出成 BLIF（`out/life_rule.blif`），官网画布的"导入 BLIF"能读。我在画布里实测过（纯前端，不连钱包）：**导入成功、自检通过**，但画布把每个 `.names` 2 输入 NAND 编译成 3 个 NAND（AND + NOT），**56 门变成 168 门**，再加固定的 2 个输出缓冲 = 170 个晶体管。换成 on-set 写法（`0- 1 / -0 1`）更糟，252 门。
+
+画布的 BLIF 导入只支持扁平网表（`.inputs/.outputs/.names/.latch`，不支持 `.subckt`），所以 REF 结构也表达不了。结论：
+
+| 路线 | 规则电路消耗 | 8×8 网格消耗 | 备注 |
+|---|---|---|---|
+| 官网画布导入 BLIF | 170 | 约 3,776（`out/life_grid_8.blif`，扁平） | 能看图，贵 3 倍 |
+| 直接发 `tapeout()` calldata | **56** | **64** | 省 token，画布事后可以从链上取回网表还原成图 |
+
+前端确认的另一条硬限制：**单笔流片的网表上限约 4 万字节**。8×8 网格 4,160 字节、16×16 网格 16,640 字节都在限内。
+
 ## 5. 浏览器里的 playground
 
 [nand-life-bench.html](nand-life-bench.html)：把同一份网表搬进浏览器，可以看棋盘跑，点某个细胞会显示它的 3×3 邻域和那 56 个 NAND 的实时翻转。页面里的规则电路代码经 node 复核，与仓库里的完全一致（56 门、392 字节、1024 种输入 0 不一致）。
